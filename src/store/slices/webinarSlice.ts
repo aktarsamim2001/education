@@ -5,11 +5,17 @@ interface Webinar {
   _id: string;
   title: string;
   description: string;
+  longDescription?: string;
   speaker: {
     _id: string;
     name: string;
     email: string;
     profileImage?: string;
+    role?: string;
+    company?: string;
+    experience?: string;
+    bio?: string;
+    expertise?: string[];
   };
   startTime: string;
   duration: number;
@@ -18,6 +24,21 @@ interface Webinar {
   recordingUrl?: string;
   createdAt: string;
   updatedAt: string;
+  status?: string;
+  maxAttendees?: number;
+  learningOutcomes?: string[];
+  prerequisites?: string[];
+  agenda?: { time: string; topic: string; description: string }[];
+  resources?: { name: string; type: string; url: string }[];
+  language?: string;
+  level?: string;
+  speakerBio?: string;
+  speakerExpertise?: string[];
+  speakerRole?: string;
+  speakerCompany?: string;
+  speakerExperience?: string;
+  category?: string;
+  tags?: string[];
 }
 
 interface WebinarState {
@@ -40,8 +61,8 @@ export const fetchWebinars = createAsyncThunk(
     try {
       const response = await axios.get('/api/webinars');
       return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch webinars');
+    } catch (error) {
+      return rejectWithValue((error as any).response?.data?.message || 'Failed to fetch webinars');
     }
   }
 );
@@ -52,8 +73,8 @@ export const fetchWebinarById = createAsyncThunk(
     try {
       const response = await axios.get(`/api/webinars/${id}`);
       return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch webinar');
+    } catch (error) {
+      return rejectWithValue((error as any).response?.data?.message || 'Failed to fetch webinar');
     }
   }
 );
@@ -64,8 +85,8 @@ export const createWebinar = createAsyncThunk(
     try {
       const response = await axios.post('/api/webinars', webinarData);
       return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to create webinar');
+    } catch (error) {
+      return rejectWithValue((error as any).response?.data?.message || 'Failed to create webinar');
     }
   }
 );
@@ -76,8 +97,8 @@ export const updateWebinar = createAsyncThunk(
     try {
       const response = await axios.put(`/api/webinars/${id}`, webinarData);
       return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to update webinar');
+    } catch (error) {
+      return rejectWithValue((error as any).response?.data?.message || 'Failed to update webinar');
     }
   }
 );
@@ -88,8 +109,8 @@ export const deleteWebinar = createAsyncThunk(
     try {
       await axios.delete(`/api/webinars/${id}`);
       return id;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to delete webinar');
+    } catch (error) {
+      return rejectWithValue((error as any).response?.data?.message || 'Failed to delete webinar');
     }
   }
 );
@@ -100,8 +121,8 @@ export const registerForWebinar = createAsyncThunk(
     try {
       const response = await axios.patch(`/api/webinars/register/${id}`);
       return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to register for webinar');
+    } catch (error) {
+      return rejectWithValue((error as any).response?.data?.message || 'Failed to register for webinar');
     }
   }
 );

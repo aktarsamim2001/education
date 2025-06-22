@@ -158,7 +158,7 @@ const CourseDetail = () => {
                   </div>
                   <div className="flex items-center bg-white/10 backdrop-blur-lg rounded-full px-4 py-2 border border-white/20">
                     <Globe className="h-5 w-5 text-white mr-2" />
-                    <span className="text-white">English</span>
+                    <span className="text-white">{course.language || 'N/A'}</span>
                   </div>
                 </div>
 
@@ -168,8 +168,8 @@ const CourseDetail = () => {
                     <User className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-white font-medium">{course.instructor?.name || 'Expert Instructor'}</p>
-                    <p className="text-blue-200 text-sm">{course.instructor?.title || 'Professional Educator'}</p>
+                    <p className="text-white font-medium">{course.instructor?.name || 'N/A'}</p>
+                    <p className="text-blue-200 text-sm">{course.instructor?.title || ''}</p>
                   </div>
                 </div>
               </div>
@@ -307,33 +307,33 @@ const CourseDetail = () => {
                       {course.description}
                     </p>
                     
-                    <h3 className="text-xl font-semibold text-white mb-4">What you'll learn</h3>
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-                      {(course.learningObjectives || [
-                        'Master the fundamentals',
-                        'Build real-world projects',
-                        'Understand best practices',
-                        'Get industry-ready skills'
-                      ]).map((objective, index) => (
-                        <li key={index} className="flex items-start text-blue-100">
-                          <CheckCircle className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                          {objective}
-                        </li>
-                      ))}
-                    </ul>
+                    {course.learningObjectives && course.learningObjectives.length > 0 && (
+                      <>
+                        <h3 className="text-xl font-semibold text-white mb-4">What you'll learn</h3>
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
+                          {course.learningObjectives.map((objective: string, index: number) => (
+                            <li key={index} className="flex items-start text-blue-100">
+                              <CheckCircle className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
+                              {objective}
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
 
-                    <h3 className="text-xl font-semibold text-white mb-4">Prerequisites</h3>
-                    <ul className="space-y-2">
-                      {(course.prerequisites || [
-                        'Basic computer skills',
-                        'Enthusiasm to learn'
-                      ]).map((prereq, index) => (
-                        <li key={index} className="flex items-start text-blue-100">
-                          <div className="w-2 h-2 bg-purple-400 rounded-full mr-3 mt-2 flex-shrink-0"></div>
-                          {prereq}
-                        </li>
-                      ))}
-                    </ul>
+                    {course.prerequisites && course.prerequisites.length > 0 && (
+                      <>
+                        <h3 className="text-xl font-semibold text-white mb-4">Prerequisites</h3>
+                        <ul className="space-y-2">
+                          {course.prerequisites.map((prereq: string, index: number) => (
+                            <li key={index} className="flex items-start text-blue-100">
+                              <div className="w-2 h-2 bg-purple-400 rounded-full mr-3 mt-2 flex-shrink-0"></div>
+                              {prereq}
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
                   </div>
                 </div>
               )}
@@ -380,12 +380,14 @@ const CourseDetail = () => {
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-white mb-2">
-                        {course.instructor?.name || 'Expert Instructor'}
+                        {course.instructor?.name || 'N/A'}
                       </h3>
-                      <p className="text-purple-300 mb-4">{course.instructor?.title || 'Professional Educator'}</p>
-                      <p className="text-blue-100 leading-relaxed">
-                        {course.instructor?.bio || 'An experienced professional with years of industry experience, dedicated to helping students achieve their learning goals through practical, hands-on education.'}
-                      </p>
+                      {course.instructor?.title && (
+                        <p className="text-purple-300 mb-4">{course.instructor.title}</p>
+                      )}
+                      {course.instructor?.bio && (
+                        <p className="text-blue-100 leading-relaxed">{course.instructor.bio}</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -429,7 +431,7 @@ const CourseDetail = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-blue-200">Language</span>
-                    <span className="text-white font-medium">English</span>
+                    <span className="text-white font-medium">{course.language || 'N/A'}</span>
                   </div>
                 </div>
               </div>

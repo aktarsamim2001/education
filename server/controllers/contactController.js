@@ -2,6 +2,7 @@ import { validationResult } from 'express-validator';
 import Contact from '../models/contactModel.js';
 import { createNotification } from './notificationController.js';
 import User from '../models/userModel.js';
+import ContactInfo from '../models/contactInfoModel.js';
 
 // @desc    Submit contact form
 // @route   POST /api/contact
@@ -88,4 +89,32 @@ export const deleteContact = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+};
+
+// Dynamic contact info from database
+export const getContactInfo = async (req, res) => {
+  try {
+    let info = await ContactInfo.findOne();
+    if (!info) {
+      // Optionally, create a default if not found
+      info = await ContactInfo.create({
+        email: 'support@learninghub.com',
+        phone: '+1 (234) 567-890',
+        address: '123 Learning Street\nEducation City, ED 12345\nUnited States',
+        socials: {
+          facebook: '',
+          twitter: '',
+          linkedin: ''
+        }
+      });
+    }
+    res.json({
+      email: info.email,
+      phone: info.phone,
+      address: info.address,
+      socials: info.socials || { facebook: '', twitter: '', linkedin: '' }
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to load contact info.' });
+  }
 };

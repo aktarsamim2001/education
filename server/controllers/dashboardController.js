@@ -1,4 +1,3 @@
-
 import User from '../models/userModel.js';
 import Course from '../models/courseModel.js';
 import Enrollment from '../models/enrollmentModel.js';
@@ -16,7 +15,8 @@ export const getAdminStats = async (req, res) => {
       totalInstructors,
       totalRevenue,
       pendingApprovals,
-      recentActivities
+      recentActivities,
+      courses
     ] = await Promise.all([
       User.countDocuments(),
       Course.countDocuments(),
@@ -33,7 +33,7 @@ export const getAdminStats = async (req, res) => {
         .populate('userId', 'name')
         .populate('courseId', 'title')
         .sort('-createdAt')
-        .limit(10)
+        .limit(10),
       Course.find({}).populate('instructor', 'name') // Fetch all courses and populate instructor name
     ]);
 

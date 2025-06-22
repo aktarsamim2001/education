@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { format } from 'date-fns';
@@ -30,51 +30,7 @@ import { fetchWebinarById, registerForWebinar, deleteWebinar } from '../../store
 import type { AppDispatch, RootState } from '../../store/store';
 import { toast } from 'react-toastify';
 import ShareModal from '../../components/ShareModal';
-
-// Static fallback data for UI elements
-const staticData = {
-  rating: 4.9,
-  learningOutcomes: [
-    'Master compound components and render props patterns',
-    'Implement advanced state management techniques',
-    'Optimize React application performance',
-    'Use React DevTools for debugging and profiling',
-    'Apply best practices for scalable React architecture'
-  ],
-  prerequisites: [
-    'Good understanding of React fundamentals',
-    'Experience with JavaScript ES6+',
-    'Basic knowledge of TypeScript (helpful but not required)'
-  ],
-  agenda: [
-    {
-      time: '14:00 - 14:15',
-      topic: 'Welcome & Introduction',
-      description: 'Overview of advanced React patterns and session outline'
-    },
-    {
-      time: '14:15 - 14:45',
-      topic: 'Compound Components',
-      description: 'Building flexible and reusable component APIs'
-    },
-    {
-      time: '14:45 - 15:15',
-      topic: 'Performance Optimization',
-      description: 'Memoization, code splitting, and profiling techniques'
-    },
-    {
-      time: '15:15 - 15:30',
-      topic: 'Q&A & Wrap-up',
-      description: 'Interactive discussion and next steps'
-    }
-  ],
-  resources: [
-    { name: 'Session Slides', type: 'pdf', url: '#' },
-    { name: 'Code Examples', type: 'github', url: '#' },
-    { name: 'Reading List', type: 'doc', url: '#' }
-  ],
-  defaultSpeakerBio: 'Experienced software architect with extensive knowledge in modern web development and React ecosystem. Passionate about sharing knowledge and helping developers grow their skills.'
-};
+import UserContext from '../../context/UserContext';
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -100,8 +56,8 @@ const WebinarDetail = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { webinar, loading, error } = useSelector((state) => state.webinars);
-  const authState = useSelector((state) => state.auth) || {};
-  const user = authState.user;
+  const { user } = useContext(UserContext);
+  console.log('Webinar Detail Rendered', { id, webinar, user });
 
   const [isLiked, setIsLiked] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
@@ -306,7 +262,7 @@ const WebinarDetail = () => {
                   </div>
                   <div className="bg-white/5 rounded-lg p-4 text-center">
                     <Star className="h-6 w-6 text-yellow-300 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-white">{staticData.rating}</div>
+                    <div className="text-2xl font-bold text-white">{webinar.rating || 4.9}</div>
                     <div className="text-sm text-blue-200">Rating</div>
                   </div>
                   <div className="bg-white/5 rounded-lg p-4 text-center">
@@ -317,26 +273,50 @@ const WebinarDetail = () => {
                 </div>
 
                 {/* Speaker */}
-                <div className="flex items-center space-x-4 p-4 bg-white/5 rounded-lg">
-                  <img
-                    src={webinar.speaker?.profileImage || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face'}
-                    alt={webinar.speaker?.name || 'Speaker'}
-                    className="h-16 w-16 rounded-full border-2 border-white/30"
-                  />
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-white">{webinar.speaker?.name || 'Unknown Speaker'}</h3>
-                    <p className="text-blue-200">{webinar.speaker?.role || 'Professional Speaker'} {webinar.speaker?.company ? `at ${webinar.speaker.company}` : ''}</p>
-                    <p className="text-sm text-blue-300">{webinar.speaker?.experience || '5+ years'} experience</p>
-                  </div>
-                  <div className="flex space-x-2">
-                    <button className="p-2 bg-white/10 rounded-lg text-blue-200 hover:text-white transition-colors duration-300">
-                      <User className="h-4 w-4" />
-                    </button>
-                    <button className="p-2 bg-white/10 rounded-lg text-blue-200 hover:text-white transition-colors duration-300">
-                      <Mail className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
+                {(() => {
+                  const speakerObj = typeof webinar.speaker === 'object' && webinar.speaker !== null ? webinar.speaker : {};
+                  const speakerName = speakerObj.name || webinar.speakerName || (typeof webinar.speaker === 'string' ? webinar.speaker : '') || 'Unknown Speaker';
+                  const speakerImage = speakerObj.profileImage || webinar.speakerImage || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face';
+                  const speakerRole = speakerObj.role || webinar.speakerRole || 'Professional Speaker';
+                  const speakerCompany = speakerObj.company || webinar.speakerCompany;
+                  const speakerExperience = speakerObj.experience || webinar.speakerExperience || '5+ years';
+                  const speakerProfileUrl = speakerObj.profileUrl || webinar.speakerProfileUrl;
+                  const speakerEmail = speakerObj.email || webinar.speakerEmail;
+                  return (
+                    <div className="flex items-center space-x-4 p-4 bg-white/5 rounded-lg">
+                      <img
+                        src={speakerImage}
+                        alt={speakerName}
+                        className="h-16 w-16 rounded-full border-2 border-white/30"
+                      />
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-white">{speakerName}</h3>
+                        <p className="text-blue-200">{speakerRole}{speakerCompany ? ` at ${speakerCompany}` : ''}</p>
+                        <p className="text-sm text-blue-300">{speakerExperience} experience</p>
+                      </div>
+                      <div className="flex space-x-2">
+                        {speakerProfileUrl ? (
+                          <a href={speakerProfileUrl} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/10 rounded-lg text-blue-200 hover:text-white transition-colors duration-300">
+                            <User className="h-4 w-4" />
+                          </a>
+                        ) : (
+                          <button className="p-2 bg-white/10 rounded-lg text-blue-200 opacity-50 cursor-not-allowed" disabled>
+                            <User className="h-4 w-4" />
+                          </button>
+                        )}
+                        {speakerEmail ? (
+                          <a href={`mailto:${speakerEmail}`} className="p-2 bg-white/10 rounded-lg text-blue-200 hover:text-white transition-colors duration-300">
+                            <Mail className="h-4 w-4" />
+                          </a>
+                        ) : (
+                          <button className="p-2 bg-white/10 rounded-lg text-blue-200 opacity-50 cursor-not-allowed" disabled>
+                            <Mail className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Tabs */}
@@ -375,41 +355,37 @@ const WebinarDetail = () => {
                       <div>
                         <h3 className="text-xl font-semibold text-white mb-4">What You'll Learn</h3>
                         <div className="space-y-3">
-                          {staticData.learningOutcomes.map((outcome, index) => (
+                          {webinar.learningOutcomes?.length ? webinar.learningOutcomes.map((outcome, index) => (
                             <div key={index} className="flex items-start space-x-3">
                               <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
                               <span className="text-blue-100">{outcome}</span>
                             </div>
-                          ))}
+                          )) : <span className="text-blue-300">No learning outcomes listed.</span>}
                         </div>
                       </div>
 
                       <div>
                         <h3 className="text-xl font-semibold text-white mb-4">Prerequisites</h3>
                         <div className="space-y-3">
-                          {staticData.prerequisites.map((prereq, index) => (
+                          {webinar.prerequisites?.length ? webinar.prerequisites.map((prereq, index) => (
                             <div key={index} className="flex items-start space-x-3">
                               <Target className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
                               <span className="text-blue-100">{prereq}</span>
                             </div>
-                          ))}
+                          )) : <span className="text-blue-300">No prerequisites listed.</span>}
                         </div>
                       </div>
 
                       <div>
                         <h3 className="text-xl font-semibold text-white mb-4">Speaker Bio</h3>
                         <p className="text-blue-100 leading-relaxed mb-4">
-                          {webinar.speaker?.bio || staticData.defaultSpeakerBio}
+                          {webinar.speakerBio || webinar.speaker?.bio || 'No speaker bio available.'}
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          {(webinar.speaker?.expertise || webinar.tags || ['React', 'JavaScript', 'Web Development']).map((skill, index) => (
-                            <span
-                              key={index}
-                              className="px-3 py-1 bg-purple-400/20 text-purple-300 rounded-full text-sm"
-                            >
-                              {skill}
-                            </span>
-                          ))}
+                          {(webinar.speakerExpertise?.length ? webinar.speakerExpertise : webinar.speaker?.expertise) ?
+                            (webinar.speakerExpertise || webinar.speaker?.expertise)?.map((skill, index) => (
+                              <span key={index} className="px-3 py-1 bg-purple-400/20 text-purple-300 rounded-full text-sm">{skill}</span>
+                            )) : <span className="text-blue-300">No expertise listed.</span>}
                         </div>
                       </div>
                     </div>
@@ -418,7 +394,7 @@ const WebinarDetail = () => {
                   {activeTab === 'agenda' && (
                     <div className="space-y-6">
                       <h3 className="text-xl font-semibold text-white mb-4">Session Agenda</h3>
-                      {staticData.agenda.map((item, index) => (
+                      {webinar.agenda?.length ? webinar.agenda.map((item, index) => (
                         <div key={index} className="flex space-x-4 p-4 bg-white/5 rounded-lg">
                           <div className="flex-shrink-0">
                             <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center text-white font-semibold">
@@ -435,7 +411,7 @@ const WebinarDetail = () => {
                             <p className="text-blue-100">{item.description}</p>
                           </div>
                         </div>
-                      ))}
+                      )) : <span className="text-blue-300">No agenda available.</span>}
                     </div>
                   )}
 
@@ -443,7 +419,7 @@ const WebinarDetail = () => {
                     <div className="space-y-6">
                       <h3 className="text-xl font-semibold text-white mb-4">Session Resources</h3>
                       <div className="grid gap-4">
-                        {staticData.resources.map((resource, index) => (
+                        {webinar.resources?.length ? webinar.resources.map((resource, index) => (
                           <div key={index} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
                             <div className="flex items-center space-x-3">
                               <Download className="h-5 w-5 text-blue-300" />
@@ -452,11 +428,11 @@ const WebinarDetail = () => {
                                 <p className="text-sm text-blue-200 capitalize">{resource.type} file</p>
                               </div>
                             </div>
-                            <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300">
+                            <a href={resource.url} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300">
                               Download
-                            </button>
+                            </a>
                           </div>
-                        ))}
+                        )) : <span className="text-blue-300">No resources available.</span>}
                       </div>
                     </div>
                   )}
@@ -520,7 +496,7 @@ const WebinarDetail = () => {
                     </p>
                   </div>
 
-                  {/* Registration Button */}
+                  {/* Registration Button & Video/Live Access */}
                   {isUpcoming ? (
                     isRegistered ? (
                       <div className="space-y-4">
@@ -529,15 +505,28 @@ const WebinarDetail = () => {
                           <p className="text-green-400 font-medium">You're registered!</p>
                           <p className="text-green-300 text-sm mt-1">Check your email for the link</p>
                         </div>
-                        {webinar.link && (
+                        {/* Always show Join Live Session for testing if liveUrl exists */}
+                        {webinar.liveUrl && (
                           <a
-                            href={webinar.link}
+                            href={webinar.liveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300"
+                          >
+                            <PlayCircle className="h-5 w-5" />
+                            <span>Join Live Session</span>
+                          </a>
+                        )}
+                        {/* Recording access after event ends */}
+                        {webinar.recordingUrl && webinar.endTime && new Date() > new Date(webinar.endTime) && (
+                          <a
+                            href={webinar.recordingUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
                           >
-                            <PlayCircle className="h-5 w-5" />
-                            <span>Join Webinar</span>
+                            <Video className="h-5 w-5" />
+                            <span>Watch Recording</span>
                           </a>
                         )}
                       </div>
@@ -553,7 +542,8 @@ const WebinarDetail = () => {
                   ) : (
                     <div className="bg-gray-400/20 border border-gray-400/30 rounded-lg p-4 text-center">
                       <p className="text-gray-400">This webinar has ended</p>
-                      {webinar.recordingUrl && (
+                      {/* Only registered users can access the recording */}
+                      {isRegistered && webinar.recordingUrl && (
                         <a
                           href={webinar.recordingUrl}
                           target="_blank"

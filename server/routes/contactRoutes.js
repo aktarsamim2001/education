@@ -3,7 +3,8 @@ import {
     submitContactForm,
     getAllContacts,
     markAsReplied,
-    deleteContact
+    deleteContact,
+    getContactInfo
 } from '../controllers/contactController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { isAdmin } from '../middleware/roleCheckMiddleware.js';
@@ -13,6 +14,7 @@ const router = express.Router();
 
 // Public routes
 router.post('/', contactValidation, submitContactForm);
+router.get('/info', getContactInfo);
 
 // Admin routes - protected
 router.use(protect);

@@ -36,6 +36,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import axios from 'axios';
 
 ChartJS.register(
   CategoryScale,
@@ -62,6 +63,11 @@ const AdminDashboard = () => {
   // Add state for course management
   const [courseSearchQuery, setCourseSearchQuery] = useState('');
   const [courseFilter, setCourseFilter] = useState('all');
+
+  // Blog Management State
+  const [blogs, setBlogs] = useState([]);
+  const [blogLoading, setBlogLoading] = useState(false);
+  const [blogError, setBlogError] = useState('');
 
   useEffect(() => {
     dispatch(fetchUsers({}));
@@ -116,6 +122,22 @@ const AdminDashboard = () => {
     return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][month - 1];
   });
   const revenueTotals = revenueData.map((item) => item.total);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      setBlogLoading(true);
+      try {
+        const res = await axios.get('/api/blogs');
+        setBlogs(res.data);
+        setBlogError('');
+      } catch (err) {
+        setBlogError('Failed to fetch blogs');
+      } finally {
+        setBlogLoading(false);
+      }
+    };
+    fetchBlogs();
+  }, []);
 
   if (loading) {
     return (
@@ -288,7 +310,7 @@ const AdminDashboard = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">
-                          {course.instructor.name}
+                          {course.instructor?.name || "Unknown Instructor"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">
                           {course.enrollmentCount}
@@ -510,6 +532,252 @@ const AdminDashboard = () => {
                   }}
                 />
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Blog Management */}
+        <div className="mt-8">
+          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl">
+            <div className="px-4 py-5 sm:p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg leading-6 font-medium bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent">
+                  Blog Management
+                </h3>
+                <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition">Add Blog</button>
+              </div>
+              {blogLoading ? (
+                <div className="text-blue-100">Loading blogs...</div>
+              ) : blogError ? (
+                <div className="text-red-400">{blogError}</div>
+              ) : (
+                <table className="min-w-full divide-y divide-white/20 mb-2">
+                  <thead className="bg-gray-800">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Title</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Author</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-gray-800 divide-y divide-y-gray-700">
+                    {blogs.map((blog) => (
+                      <tr key={blog._id}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{blog.title}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">{blog.author?.name || 'Unknown'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">Edit | Delete</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Webinar Management */}
+        <div className="mt-8">
+          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl">
+            <div className="px-4 py-5 sm:p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg leading-6 font-medium bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent">
+                  Webinar Management
+                </h3>
+                <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition">Add Webinar</button>
+              </div>
+              <table className="min-w-full divide-y divide-white/20 mb-2">
+                <thead className="bg-gray-800">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Title</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-gray-800 divide-y divide-y-gray-700">
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">Sample Webinar</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">2025-06-19</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">Edit | Delete</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Banner Management */}
+        <div className="mt-8">
+          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl">
+            <div className="px-4 py-5 sm:p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg leading-6 font-medium bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent">
+                  Banner Management
+                </h3>
+                <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition">Add Banner</button>
+              </div>
+              <table className="min-w-full divide-y divide-white/20 mb-2">
+                <thead className="bg-gray-800">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Image</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Title</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-gray-800 divide-y divide-y-gray-700">
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">[Banner Image]</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">Sample Banner</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">Edit | Delete</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="mt-8">
+          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl">
+            <div className="px-4 py-5 sm:p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg leading-6 font-medium bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent">
+                  Stats
+                </h3>
+                <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition">Add Stat</button>
+              </div>
+              <table className="min-w-full divide-y divide-white/20 mb-2">
+                <thead className="bg-gray-800">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Label</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Value</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-gray-800 divide-y divide-y-gray-700">
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">Sample Stat</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">123</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">Edit | Delete</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Features */}
+        <div className="mt-8">
+          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl">
+            <div className="px-4 py-5 sm:p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg leading-6 font-medium bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent">
+                  Features
+                </h3>
+                <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition">Add Feature</button>
+              </div>
+              <table className="min-w-full divide-y divide-white/20 mb-2">
+                <thead className="bg-gray-800">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Title</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Description</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-gray-800 divide-y divide-y-gray-700">
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">Sample Feature</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">Feature description</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">Edit | Delete</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Why Choose Us */}
+        <div className="mt-8">
+          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl">
+            <div className="px-4 py-5 sm:p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg leading-6 font-medium bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent">
+                  Why Choose Us
+                </h3>
+                <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition">Add Reason</button>
+              </div>
+              <table className="min-w-full divide-y divide-white/20 mb-2">
+                <thead className="bg-gray-800">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Reason</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-gray-800 divide-y divide-y-gray-700">
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">Sample Reason</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">Edit | Delete</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* FAQ */}
+        <div className="mt-8">
+          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl">
+            <div className="px-4 py-5 sm:p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg leading-6 font-medium bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent">
+                  FAQ
+                </h3>
+                <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition">Add FAQ</button>
+              </div>
+              <table className="min-w-full divide-y divide-white/20 mb-2">
+                <thead className="bg-gray-800">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Question</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Answer</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-gray-800 divide-y divide-y-gray-700">
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">Sample Question?</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">Sample Answer</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">Edit | Delete</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Testimonials */}
+        <div className="mt-8 mb-8">
+          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl">
+            <div className="px-4 py-5 sm:p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg leading-6 font-medium bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent">
+                  Testimonials
+                </h3>
+                <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition">Add Testimonial</button>
+              </div>
+              <table className="min-w-full divide-y divide-white/20 mb-2">
+                <thead className="bg-gray-800">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Message</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-blue-100 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-gray-800 divide-y divide-y-gray-700">
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">Sample Name</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">Sample testimonial message</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-100">Edit | Delete</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

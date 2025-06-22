@@ -1,5 +1,6 @@
 import { validationResult } from 'express-validator';
 import Webinar from '../models/webinarModel.js';
+import { resolveSpeakerId } from './resolveSpeakerId.js';
 
 // @desc    Create a new webinar
 // @route   POST /api/webinars
@@ -11,9 +12,19 @@ export const createWebinar = async (req, res) => {
   }
 
   try {
+    // Use resolveSpeakerId to support username or ObjectId
+    let speakerId = req.body.speaker || req.user._id;
+    let resolvedSpeakerId = await resolveSpeakerId(speakerId);
+    // If not found, but a custom name is provided, allow custom speaker
+    if (!resolvedSpeakerId && req.body.speakerName) {
+      req.body.speaker = null;
+    } else if (!resolvedSpeakerId) {
+      return res.status(400).json({ message: 'Speaker not found' });
+    } else {
+      req.body.speaker = resolvedSpeakerId;
+    }
     const webinar = new Webinar({
       ...req.body,
-      speaker: req.user._id,
     });
 
     const createdWebinar = await webinar.save();
@@ -58,7 +69,7 @@ export const getWebinars = async (req, res) => {
 export const getWebinarById = async (req, res) => {
   try {
     const webinar = await Webinar.findById(req.params.id)
-      .populate('speaker', 'name email profileImage')
+      .populate('speaker', 'name email profileImage role company experience bio expertise')
       .populate('attendees', 'name email');
 
     if (!webinar) {
@@ -89,6 +100,15 @@ export const updateWebinar = async (req, res) => {
 
     if (webinar.speaker.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to update this webinar' });
+    }
+
+    // If speaker is being updated, resolve to ObjectId
+    if (req.body.speaker) {
+      const speakerId = await resolveSpeakerId(req.body.speaker);
+      if (!speakerId) {
+        return res.status(400).json({ message: 'Speaker not found' });
+      }
+      req.body.speaker = speakerId;
     }
 
     const updatedWebinar = await Webinar.findByIdAndUpdate(
@@ -155,7 +175,7 @@ export const registerForWebinar = async (req, res) => {
     webinar.attendees.push(req.user._id);
     await webinar.save();
 
-    const populatedWebinar = await webinar
+    const populatedWebinar = await Webinar.findById(webinar._id)
       .populate('speaker', 'name email profileImage')
       .populate('attendees', 'name email');
 

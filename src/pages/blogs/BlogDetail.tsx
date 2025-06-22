@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { format } from 'date-fns';
@@ -6,14 +6,15 @@ import { Heart, MessageSquare, Tag, Trash2, Edit, User } from 'lucide-react';
 import { fetchBlogById, toggleBlogLike, addBlogComment, deleteBlog } from '../../store/slices/blogSlice';
 import type { AppDispatch, RootState } from '../../store/store';
 import ShareModal from '../../components/ShareModal';
+import UserContext from '../../context/UserContext';
 
 const BlogDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { blog, loading, error } = useSelector((state: RootState) => state.blogs);
-  const authState = useSelector((state: RootState) => state.auth) || {};
-  const user = authState.user;
+  const { user } = useContext(UserContext);
+
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   useEffect(() => {
@@ -267,7 +268,13 @@ const BlogDetail = () => {
                 <div className="flex items-center mb-4">
                   <User className="h-6 w-6 text-white" />
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-white">{comment.user?.name || 'Unknown'}</p>
+                    <p className="text-sm font-medium text-white">
+                      {user && comment.user?._id === user._id
+                        ? 'You'
+                        : user && comment.user?._id === user?._id
+                        ? user?.name
+                        : 'Unknown'}
+                    </p>
                     <time className="text-xs text-blue-100">
                       {comment.createdAt && !isNaN(new Date(comment.createdAt).getTime())
                         ? format(new Date(comment.createdAt), 'PPP')

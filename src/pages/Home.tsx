@@ -1,811 +1,914 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import axios from '../axiosConfig';
-import { BookOpen, Calendar, Clock, Users, ArrowRight, Star, Play, Award, TrendingUp, ChevronLeft, ChevronRight, Shield, Zap, Globe, HeadphonesIcon, Trophy, Target } from 'lucide-react';
-import { format } from 'date-fns';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/autoplay';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../store/store';
-import { fetchBanners } from '../store/slices/bannerSlice';
-import { fetchFeatures } from '../store/slices/featureSlice';
-import { fetchStats } from '../store/slices/statSlice';
-import { fetchTestimonials } from '../store/slices/testimonialSlice';
-import { fetchFaqs } from '../store/slices/faqSlice';
-import { fetchWhyChooseUs } from '../store/slices/whyChooseUsSlice';
-import { fetchCourses } from '../store/slices/courseSlice';
-import { fetchBlogs } from '../store/slices/blogSlice';
-import { fetchWebinars } from '../store/slices/webinarSlice';
+"use client"
 
-interface Course {
-  _id: string;
-  title: string;
-  description: string;
-  thumbnail: string;
-  price: number;
-  rating: number;
-  enrolledStudents: string[];
-}
-
-interface Blog {
-  _id: string;
-  title: string;
-  content: string;
-  thumbnail: string;
-  authorId: {
-    name: string;
-    profileImage: string;
-  };
-  createdAt: string;
-}
-
-interface Webinar {
-  _id: string;
-  title: string;
-  description: string;
-  startTime: string;
-  duration: number;
-  speaker: {
-    name: string;
-    profileImage: string;
-  };
-  attendees: string[];
-}
-
-// Add interfaces for new dynamic sections
-interface Banner { _id: string; img: string; headline: string; subheadline: string; ctas: any[]; stats: any[]; badge?: { icon: any; text: string }; }
-interface Feature { _id: string; title: string; description: string; icon?: string; order?: number; }
-interface Stat { _id: string; value: string; label: string; order?: number; }
-interface Testimonial { _id: string; img: string; text: string; name: string; title: string; }
-interface FAQ { _id: string; question: string; answer: string; order?: number; }
-interface WhyChooseUs { _id: string; title: string; description: string; icon?: string; order?: number; }
+import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
+import {
+  BookOpen,
+  Calendar,
+  Clock,
+  Users,
+  ArrowRight,
+  Star,
+  TrendingUp,
+  ChevronLeft,
+  ChevronRight,
+  Trophy,
+  Play,
+  Award,
+  Globe,
+} from "lucide-react"
+import { format } from "date-fns"
+import { Swiper, SwiperSlide } from "swiper/react"
+import { Autoplay, Navigation, Pagination } from "swiper/modules"
+import "swiper/css"
+import "swiper/css/navigation"
+import "swiper/css/pagination"
+import "swiper/css/autoplay"
+import { useSelector, useDispatch } from "react-redux"
+import type { RootState, AppDispatch } from "../store/store"
+import { fetchBanners } from "../store/slices/bannerSlice"
+import { fetchFeatures } from "../store/slices/featureSlice"
+import { fetchStats } from "../store/slices/statSlice"
+import { fetchTestimonials } from "../store/slices/testimonialSlice"
+import { fetchFaqs } from "../store/slices/faqSlice"
+import { fetchWhyChooseUs } from "../store/slices/whyChooseUsSlice"
+import { fetchCourses } from "../store/slices/courseSlice"
+import { fetchBlogs } from "../store/slices/blogSlice"
+import { fetchWebinars } from "../store/slices/webinarSlice"
 
 const Home = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  
-  // Redux selectors for all dynamic sections
-  const banners = useSelector((state: RootState) => state.banners.items);
-  const bannersLoading = useSelector((state: RootState) => state.banners.loading);
-  const bannersError = useSelector((state: RootState) => state.banners.error);
+  const dispatch = useDispatch<AppDispatch>()
 
-  const features = useSelector((state: RootState) => state.features.items);
-  const stats = useSelector((state: RootState) => state.stats.items);
-  const testimonials = useSelector((state: RootState) => state.testimonials.items);
-  const faqs = useSelector((state: RootState) => state.faqs.items);
-  const whyChooseUs = useSelector((state: RootState) => state.whyChooseUs.items);
-  const courses = useSelector((state: RootState) => state.courses.courses);
-  const coursesLoading = useSelector((state: RootState) => state.courses.loading);
-  const coursesError = useSelector((state: RootState) => state.courses.error);
-  const blogs = useSelector((state: RootState) => state.blogs.blogs);
-  const blogsLoading = useSelector((state: RootState) => state.blogs.loading);
-  const blogsError = useSelector((state: RootState) => state.blogs.error);
-  const webinars = useSelector((state: RootState) => state.webinars.webinars);
-  const webinarsLoading = useSelector((state: RootState) => state.webinars.loading);
-  const webinarsError = useSelector((state: RootState) => state.webinars.error);
+  // Redux selectors for all dynamic sections
+  const banners = useSelector((state: RootState) => state.banners.items)
+  const bannersLoading = useSelector((state: RootState) => state.banners.loading)
+  const bannersError = useSelector((state: RootState) => state.banners.error)
+
+  const features = useSelector((state: RootState) => state.features.items)
+  const stats = useSelector((state: RootState) => state.stats.items)
+  const testimonials = useSelector((state: RootState) => state.testimonials.items)
+  const faqs = useSelector((state: RootState) => state.faqs.items)
+  const whyChooseUs = useSelector((state: RootState) => state.whyChooseUs.items)
+  const courses = useSelector((state: RootState) => state.courses.courses)
+  const coursesLoading = useSelector((state: RootState) => state.courses.loading)
+  const coursesError = useSelector((state: RootState) => state.courses.error)
+  const blogs = useSelector((state: RootState) => state.blogs.blogs)
+  const blogsLoading = useSelector((state: RootState) => state.blogs.loading)
+  const blogsError = useSelector((state: RootState) => state.blogs.error)
+  const webinars = useSelector((state: RootState) => state.webinars.webinars)
+  const webinarsLoading = useSelector((state: RootState) => state.webinars.loading)
+  const webinarsError = useSelector((state: RootState) => state.webinars.error)
 
   useEffect(() => {
-    dispatch(fetchBanners());
-    dispatch(fetchFeatures());
-    dispatch(fetchStats());
-    dispatch(fetchTestimonials());
-    dispatch(fetchFaqs());
-    dispatch(fetchWhyChooseUs());
-    dispatch(fetchCourses());
-    dispatch(fetchBlogs());
-    dispatch(fetchWebinars());
-  }, [dispatch]);
+    dispatch(fetchBanners())
+    dispatch(fetchFeatures())
+    dispatch(fetchStats())
+    dispatch(fetchTestimonials())
+    dispatch(fetchFaqs())
+    dispatch(fetchWhyChooseUs())
+    dispatch(fetchCourses())
+    dispatch(fetchBlogs())
+    dispatch(fetchWebinars())
+  }, [dispatch])
+
+  // Map backend banner fields to frontend expected fields
+  const mappedBanners = banners.map((banner: any) => ({
+    ...banner,
+    img: banner.image,
+    headline: banner.title,
+    subheadline: banner.subtitle,
+    ctas: banner.ctas || [],
+    stats: banner.stats || [],
+    badge: banner.badge || undefined,
+  }))
 
   if (bannersLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center relative overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-white rounded-full opacity-20 animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${3 + Math.random() * 4}s`,
-            }}
-          ></div>
-        ))}
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
+        </div>
         <div className="flex flex-col items-center relative z-10">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-r-blue-500 border-t-transparent"></div>
-          <p className="mt-4 text-blue-100 font-medium">Loading amazing content...</p>
+          <div className="relative">
+            <div className="animate-spin rounded-full h-20 w-20 border-4 border-purple-500/30 border-t-purple-500"></div>
+            <div className="absolute inset-0 animate-ping rounded-full h-20 w-20 border-4 border-purple-500/20"></div>
+          </div>
+          <p className="mt-6 text-slate-300 font-medium text-lg">Loading amazing content...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (bannersError) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center relative overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-white rounded-full opacity-20 animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${3 + Math.random() * 4}s`,
-            }}
-          ></div>
-        ))}
-        <div className="text-center bg-white/10 backdrop-blur-lg border border-white/20 p-8 rounded-xl relative z-10">
-          <div className="text-red-400 text-lg font-semibold mb-4">{bannersError}</div>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
+        </div>
+        <div className="text-center bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl relative z-10 max-w-md mx-4">
+          <div className="text-red-400 text-xl font-semibold mb-4">{bannersError}</div>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg"
           >
             Try Again
           </button>
         </div>
       </div>
-    );
+    )
   }
 
   return (
-    <div className="h-full bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-      {/* Full-width Banner Slider Section with Hero Content */}
-      <section className="relative w-full min-h-screen overflow-hidden ">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
+      {/* Enhanced Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl animate-pulse"></div>
+      </div>
+
+      {/* Hero Banner Section */}
+      <section className="relative w-full min-h-screen overflow-hidden">
         <Swiper
-          modules={[Autoplay, Navigation]}
+          modules={[Autoplay, Navigation, Pagination]}
           spaceBetween={0}
           slidesPerView={1}
-          autoplay={{ delay: 4000, disableOnInteraction: false }}
-          speed={900}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
+          speed={1200}
           loop={true}
+          pagination={{ clickable: true, el: ".hero-pagination" }}
           navigation={{ prevEl: ".banner_prev", nextEl: ".banner_next" }}
           className="w-full min-h-screen"
         >
-          {banners.length > 0 ? banners.map((banner) => (
-            <SwiperSlide key={banner._id}>
-              <div className="relative w-full min-h-screen flex items-center justify-center">
-                <img
-                  src={banner.img}
-                  alt="Banner"
-                  className="absolute inset-0 w-full h-full object-cover object-center z-0 brightness-75"
-                />
-                <div className="absolute inset-0 bg-black/50 z-10"></div>
-                <div className="relative z-20 max-w-5xl mx-auto px-4 text-center flex flex-col items-center justify-center h-full">
-                  {banner.badge && (
-                    <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
-                      {banner.badge.icon && <span className="mr-2">{banner.badge.icon}</span>}
-                      {banner.badge.text}
-                    </div>
-                  )}
-                  <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-                    {banner.headline}
-                  </h1>
-                  <p className="text-xl md:text-2xl text-blue-100 mb-10 max-w-3xl mx-auto leading-relaxed">
-                    {banner.subheadline}
-                  </p>
-                  {/* Optionally render CTAs and stats if available */}
+          {mappedBanners.length > 0 ? (
+            mappedBanners.map((banner) => (
+              <SwiperSlide key={banner._id}>
+                <div className="relative w-full min-h-screen flex items-center justify-center">
+                  <img
+                    src={banner.img || "/placeholder.svg"}
+                    alt="Banner"
+                    className="absolute inset-0 w-full h-full object-cover object-center z-0"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70 z-10"></div>
+
+                  <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    {banner.badge && (
+                      <div className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-sm font-semibold mb-8 text-white">
+                        {banner.badge.icon && <span className="mr-2 text-lg">{banner.badge.icon}</span>}
+                        {banner.badge.text}
+                      </div>
+                    )}
+
+                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight">
+                      <span className="bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+                        {banner.headline}
+                      </span>
+                    </h1>
+
+                    <p className="text-xl md:text-2xl lg:text-3xl text-slate-200 mb-10 max-w-4xl mx-auto leading-relaxed font-light">
+                      {banner.subheadline}
+                    </p>
+
+                    {banner.stats && banner.stats.length > 0 && (
+                      <div className="flex flex-wrap justify-center gap-6 mb-12">
+                        {banner.stats.map((stat: any, idx: number) => (
+                          <div
+                            key={idx}
+                            className="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-300"
+                          >
+                            <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
+                            <div className="text-slate-300 text-sm font-medium">{stat.label}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {banner.ctaText && banner.ctaLink && (
+                      <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                        <Link
+                          to={banner.ctaLink}
+                          className="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-lg font-semibold rounded-xl shadow-2xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+                        >
+                          {banner.ctaText}
+                          <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                        <button className="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-300">
+                          <Play className="mr-2 w-5 h-5" />
+                          Watch Demo
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))
+          ) : (
+            <SwiperSlide>
+              <div className="min-h-screen flex items-center justify-center text-white">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold mb-4">Welcome to Our Platform</h1>
+                  <p className="text-xl text-slate-300">No banners available</p>
                 </div>
               </div>
             </SwiperSlide>
-          )) : <SwiperSlide><div className="min-h-screen flex items-center justify-center text-white">No banners available</div></SwiperSlide>}
+          )}
         </Swiper>
-        {/* Custom Navigation Buttons */}
-        <button className="banner_prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-20">
+
+        {/* Enhanced Navigation */}
+        <button
+          aria-label="Previous banner"
+          className="banner_prev absolute left-6 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-4 text-white hover:bg-white/20 focus:ring-4 focus:ring-purple-500/50 transition-all duration-300 transform hover:scale-110 z-30"
+        >
           <ChevronLeft className="w-6 h-6" />
         </button>
-        <button className="banner_next absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-20">
+        <button
+          aria-label="Next banner"
+          className="banner_next absolute right-6 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-4 text-white hover:bg-white/20 focus:ring-4 focus:ring-purple-500/50 transition-all duration-300 transform hover:scale-110 z-30"
+        >
           <ChevronRight className="w-6 h-6" />
         </button>
+
+        {/* Pagination Dots */}
+        <div className="hero-pagination absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-2"></div>
       </section>
 
-      {/* Why Choose Our Educational Platform */}
-      <section className="py-20 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-white rounded-full opacity-20 animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${3 + Math.random() * 4}s`,
-            }}
-          ></div>
-        ))}
+      {/* Why Choose Us Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 to-purple-900/50"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
-              <Trophy className="w-4 h-4 mr-2 text-orange-400" />
-              Why Choose Us
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500/20 to-blue-500/20 backdrop-blur-md border border-white/10 rounded-full text-sm font-semibold mb-8">
+              <Trophy className="w-5 h-5 mr-2 text-amber-400" />
+              <span className="bg-gradient-to-r from-purple-200 to-blue-200 bg-clip-text text-transparent">
+                Why Choose Us
+              </span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-6">
-              Why Choose Our Educational Platform?
+            <h2 className="text-4xl md:text-6xl font-bold mb-8">
+              <span className="bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+                Why Choose Our Educational Platform?
+              </span>
             </h2>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
               Discover what makes us the preferred choice for professionals and students worldwide
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {whyChooseUs.length > 0 ? whyChooseUs.map((item) => (
-              <div key={item._id} className="group bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl p-8 transition-all duration-300 transform hover:scale-105 hover:bg-white/15">
-                <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-6 group-hover:scale-110 transition-transform duration-300">
-                  {/* Optionally render icon if available */}
+            {whyChooseUs.length > 0 ? (
+              whyChooseUs.map((item, index) => (
+                <div
+                  key={item._id}
+                  className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-500 "
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <Award className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-slate-300 leading-relaxed group-hover:text-slate-200 transition-colors">
+                    {item.description}
+                  </p>
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-blue-300 transition-colors">
-                  {item.title}
-                </h3>
-                <p className="text-blue-100 leading-relaxed">
-                  {item.description}
-                </p>
+              ))
+            ) : (
+              <div className="col-span-full text-center text-slate-400 py-12">
+                <Globe className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                <p className="text-xl">No features available at the moment</p>
               </div>
-            )) : <div className="text-white">No features available</div>}
+            )}
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-white rounded-full opacity-20 animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${3 + Math.random() * 4}s`,
-            }}
-          ></div>
-        ))}
+      {/* Enhanced Stats Section */}
+      <section className="py-20 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl p-8">
-            {stats.length > 0 ? stats.map((stat) => (
-              <div className="text-center" key={stat._id}>
-                <div className="text-4xl font-bold text-white mb-2">{stat.value}</div>
-                <div className="text-blue-100">{stat.label}</div>
-              </div>
-            )) : <div className="text-white col-span-4">No stats available</div>}
+          <div className="bg-gradient-to-r from-white/5 to-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-12 shadow-2xl">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {stats.length > 0 ? (
+                stats.map((stat, index) => (
+                  <div key={stat._id} className="text-center group" style={{ animationDelay: `${index * 150}ms` }}>
+                    <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">
+                      {stat.value}
+                    </div>
+                    <div className="text-slate-300 font-medium text-lg">{stat.label}</div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full text-center text-slate-400 py-8">
+                  <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p className="text-lg">No statistics available</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Courses */}
-      <section className="py-20 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-white rounded-full opacity-20 animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${3 + Math.random() * 4}s`,
-            }}
-          ></div>
-        ))}
+      {/* Enhanced Featured Courses */}
+      <section className="py-24 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex justify-between items-center mb-12">
+          <div className="flex justify-between items-center mb-16">
             <div>
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-4">
-                Featured Courses
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                <span className="bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+                  Featured Courses
+                </span>
               </h2>
-              <p className="text-xl text-blue-100">Discover our most popular and highly-rated courses</p>
+              <p className="text-xl text-slate-300 max-w-2xl">
+                Discover our most popular and highly-rated courses designed by industry experts
+              </p>
             </div>
             <Link
               to="/courses"
-              className="hidden md:inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+              className="hidden md:inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105"
             >
               View All Courses
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </div>
-          
-          <div className="relative mb-8">
+
+          <div className="relative">
             <Swiper
               modules={[Autoplay, Navigation]}
               spaceBetween={30}
               slidesPerView={1}
-              autoplay={{ delay: 5000, disableOnInteraction: false }}
+              autoplay={{ delay: 4000, disableOnInteraction: false }}
               speed={1000}
-              loop={true}
+              loop={courses.length > 3}
               breakpoints={{
                 640: { slidesPerView: 2 },
                 768: { slidesPerView: 2 },
                 1024: { slidesPerView: 3 },
-                1280: { slidesPerView: 4 },
+                1280: { slidesPerView: 3 },
               }}
               navigation={{
                 prevEl: ".courses_prev",
                 nextEl: ".courses_next",
               }}
             >
-              {courses.length > 0 ? courses.map((course) => (
-                <SwiperSlide key={course._id}>
-                  <Link
-                    to={`/courses/${course._id}`}
-                    className="group bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-105 block"
-                  >
-                    <div className="relative overflow-hidden">
-                      <img
-                        src={course.thumbnail || 'https://images.pexels.com/photos/5905710/pexels-photo-5905710.jpeg'}
-                        alt={course.title || 'Course thumbnail'}
-                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-orange-400/20 text-orange-400 px-3 py-1 rounded-full text-sm font-semibold">
-                          Bestseller
-                        </span>
-                      </div>
-                      <div className="absolute top-4 right-4">
-                        <div className="flex items-center bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-2 py-1">
-                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                          <span className="text-sm font-semibold text-white ml-1">{course.rating || 'N/A'}</span>
+              {courses.length > 0 ? (
+                courses.map((course) => (
+                  <SwiperSlide key={course._id}>
+                    <Link
+                      to={`/courses/${course._id}`}
+                      className="group block bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl  shadow-xl"
+                    >
+                      <div className="relative overflow-hidden">
+                        <img
+                          src={course.thumbnail || "https://images.pexels.com/photos/5905710/pexels-photo-5905710.jpeg"}
+                          alt={course.title || "Course thumbnail"}
+                          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-700 rounded-2xl"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute top-4 left-4">
+                          <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+                            Bestseller
+                          </span>
+                        </div>
+                        <div className="absolute top-4 right-4">
+                          <div className="flex items-center bg-white/20 backdrop-blur-md border border-white/20 rounded-full px-3 py-1">
+                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                            <span className="text-sm font-semibold text-white ml-1">{course.rating || "4.8"}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
-                        {course.title || 'Untitled Course'}
-                      </h3>
-                      <p className="text-blue-100 mb-4 line-clamp-2 leading-relaxed">
-                        {course.description || 'No description available.'}
-                      </p>
-                      
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center text-blue-100 group-hover:scale-110 transition-transform duration-300">
-                          <Users className="h-4 w-4 mr-2 text-white" />
-                          <span className="text-sm">{course.enrolledStudents?.length || 0} students</span>
+
+                      <div className="p-6">
+                        <h3 className="text-xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors line-clamp-2">
+                          {course.title || "Untitled Course"}
+                        </h3>
+                        <p className="text-slate-300 mb-6 line-clamp-2 leading-relaxed">
+                          {course.description || "Comprehensive course designed to enhance your skills."}
+                        </p>
+
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="flex items-center text-slate-300">
+                            <Users className="h-4 w-4 mr-2 text-purple-400" />
+                            <span className="text-sm font-medium">{course.enrolledStudents?.length || 0} students</span>
+                          </div>
+                          <div className="flex items-center text-slate-300">
+                            <Clock className="h-4 w-4 mr-2 text-blue-400" />
+                            <span className="text-sm font-medium">12 weeks</span>
+                          </div>
                         </div>
-                        <div className="flex items-center text-blue-100 group-hover:scale-110 transition-transform duration-300">
-                          <Clock className="h-4 w-4 mr-2 text-white" />
-                          <span className="text-sm">12 weeks</span>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                            ₹{course.price?.toLocaleString() || "0"}
+                          </span>
+                          <div className="flex items-center text-emerald-400 bg-emerald-400/20 px-3 py-1 rounded-full">
+                            <TrendingUp className="w-4 h-4 mr-1" />
+                            <span className="text-sm font-semibold">Popular</span>
+                          </div>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <span className="text-3xl font-bold text-white">
-                          ₹{course.price?.toLocaleString() || '0'}
-                        </span>
-                        <div className="flex items-center text-green-400 bg-green-400/20 px-3 py-1 rounded-full">
-                          <TrendingUp className="w-4 h-4 mr-1" />
-                          <span className="text-sm font-semibold">Popular</span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
+                    </Link>
+                  </SwiperSlide>
+                ))
+              ) : (
+                <SwiperSlide>
+                  <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
+                    <BookOpen className="w-16 h-16 mx-auto mb-4 text-slate-400 opacity-50" />
+                    <p className="text-slate-400 text-lg">No courses available</p>
+                  </div>
                 </SwiperSlide>
-              )) : <SwiperSlide><div className="min-h-screen flex items-center justify-center text-white">No courses available</div></SwiperSlide>}
+              )}
             </Swiper>
-            
-            {/* Custom Navigation Buttons */}
-            <button className="courses_prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10">
+
+            {/* Enhanced Navigation Buttons */}
+            <button className="courses_prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-4 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10 shadow-lg">
               <ChevronLeft className="w-6 h-6" />
             </button>
-            <button className="courses_next absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10">
+            <button className="courses_next absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-4 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10 shadow-lg">
               <ChevronRight className="w-6 h-6" />
             </button>
           </div>
-          
-          <div className="text-center md:hidden">
+
+          <div className="text-center mt-12 md:hidden">
             <Link
               to="/courses"
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg"
             >
               View All Courses
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Latest Blogs */}
-      <section className="py-20 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-white rounded-full opacity-20 animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${3 + Math.random() * 4}s`,
-            }}
-          ></div>
-        ))}
+      {/* Enhanced Latest Blogs */}
+      <section className="py-24 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex justify-between items-center mb-12">
+          <div className="flex justify-between items-center mb-16">
             <div>
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-4">
-                Latest Insights
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                <span className="bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+                  Latest Insights
+                </span>
               </h2>
-              <p className="text-xl text-blue-100">Stay updated with industry trends and expert knowledge</p>
+              <p className="text-xl text-slate-300 max-w-2xl">
+                Stay updated with industry trends and expert knowledge from our thought leaders
+              </p>
             </div>
             <Link
               to="/blogs"
-              className="hidden md:inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+              className="hidden md:inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105"
             >
               View All Articles
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </div>
-          
-          <div className="relative mb-8">
+
+          <div className="relative">
             <Swiper
               modules={[Autoplay, Navigation]}
               spaceBetween={30}
               slidesPerView={1}
               autoplay={{ delay: 5000, disableOnInteraction: false }}
               speed={1000}
-              loop={true}
+              loop={blogs.length > 2}
               breakpoints={{
                 640: { slidesPerView: 1 },
                 768: { slidesPerView: 2 },
-                1024: { slidesPerView: 2 },
+                1024: { slidesPerView: 3 },
               }}
               navigation={{
                 prevEl: ".blogs_prev",
                 nextEl: ".blogs_next",
               }}
             >
-              {blogs.length > 0 ? blogs.map((blog) => (
-                <SwiperSlide key={blog._id}>
-                  <Link
-                    to={`/blogs/${blog._id}`}
-                    className="group bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-105 block"
-                  >
-                    <div className="relative overflow-hidden">
-                      <img
-                        src={blog.thumbnail || 'https://images.pexels.com/photos/3243/pen-notebook-notes-studying.jpg'}
-                        alt={blog.title || 'Blog thumbnail'}
-                        className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-indigo-400/20 text-indigo-400 px-3 py-1 rounded-full text-sm font-semibold">
-                          Featured
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors line-clamp-2">
-                        {blog.title || 'Untitled Blog'}
-                      </h3>
-                      <p className="text-blue-100 mb-6 line-clamp-3 leading-relaxed">
-                        {blog.content || 'No content available.'}
-                      </p>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <img
-                            src={blog.authorId?.profileImage || 'https://placehold.co/40'}
-                            alt={blog.authorId?.name || 'Author'}
-                            className="h-10 w-10 rounded-full mr-3 object-cover border border-white/20"
-                          />
-                          <div>
-                            <span className="text-sm font-semibold text-white block">
-                              {blog.authorId?.name || 'Unknown Author'}
-                            </span>
-                            <span className="text-xs text-blue-100">Author</span>
-                          </div>
+              {blogs.length > 0 ? (
+                blogs.map((blog) => (
+                  <SwiperSlide key={blog._id}>
+                    <Link
+                      to={`/blogs/${blog._id}`}
+                      className="group block bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-500 transform shadow-xl"
+                    >
+                      <div className="relative overflow-hidden">
+                        <img
+                          src={
+                            blog.thumbnail || "https://images.pexels.com/photos/3243/pen-notebook-notes-studying.jpg"
+                          }
+                          alt={blog.title || "Blog thumbnail"}
+                          className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-700 rounded-2xl"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute top-4 left-4">
+                          <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+                            Featured
+                          </span>
                         </div>
-                        <span className="text-sm text-blue-100 bg-white/10 border border-white/20 px-3 py-1 rounded-full">
-                          {blog.createdAt && !isNaN(new Date(blog.createdAt).getTime())
-                            ? format(new Date(blog.createdAt), 'MMM d, yyyy')
-                            : 'Recent'}
-                        </span>
                       </div>
-                    </div>
-                  </Link>
+
+                      <div className="p-6">
+                        <h3 className="text-xl font-bold text-white mb-4 group-hover:text-indigo-300 transition-colors line-clamp-2 leading-tight">
+                          {blog.title || "Untitled Blog"}
+                        </h3>
+                        <p className="text-slate-300 mb-6 line-clamp-3 leading-relaxed">
+                          {blog.content || "Discover insights and knowledge from industry experts."}
+                        </p>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <img
+                              src={blog.authorId?.profileImage || "https://placehold.co/40"}
+                              alt={blog.authorId?.name || "Author"}
+                              className="h-12 w-12 rounded-full mr-3 object-cover border-2 border-white/20"
+                            />
+                            <div>
+                              <span className="text-sm font-semibold text-white block">
+                                {blog.authorId?.name || "Expert Author"}
+                              </span>
+                              <span className="text-xs text-slate-400">Content Creator</span>
+                            </div>
+                          </div>
+                          <span className="text-sm text-slate-300 bg-white/10 border border-white/20 px-3 py-1 rounded-full">
+                            {blog.createdAt && !isNaN(new Date(blog.createdAt).getTime())
+                              ? format(new Date(blog.createdAt), "MMM d, yyyy")
+                              : "Recent"}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  </SwiperSlide>
+                ))
+              ) : (
+                <SwiperSlide>
+                  <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
+                    <BookOpen className="w-16 h-16 mx-auto mb-4 text-slate-400 opacity-50" />
+                    <p className="text-slate-400 text-lg">No blog posts available</p>
+                  </div>
                 </SwiperSlide>
-              )) : <SwiperSlide><div className="min-h-screen flex items-center justify-center text-white">No blogs available</div></SwiperSlide>}
+              )}
             </Swiper>
-            
-            {/* Custom Navigation Buttons */}
-            <button className="blogs_prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10">
+
+            {/* Navigation Buttons */}
+            <button className="blogs_prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-4 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10 shadow-lg">
               <ChevronLeft className="w-6 h-6" />
             </button>
-            <button className="blogs_next absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10">
+            <button className="blogs_next absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-4 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10 shadow-lg">
               <ChevronRight className="w-6 h-6" />
             </button>
           </div>
-          
-          <div className="text-center md:hidden">
+
+          <div className="text-center mt-12 md:hidden">
             <Link
               to="/blogs"
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg"
             >
               View All Articles
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Upcoming Webinars */}
-      <section className="py-20 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-white rounded-full opacity-20 animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${3 + Math.random() * 4}s`,
-            }}
-          ></div>
-        ))}
+      {/* Enhanced Upcoming Webinars */}
+      <section className="py-24 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex justify-between items-center mb-12">
+          <div className="flex justify-between items-center mb-16">
             <div>
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-4">
-                Live Webinars
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                <span className="bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+                  Live Webinars
+                </span>
               </h2>
-              <p className="text-xl text-blue-100">Join live sessions with industry experts</p>
+              <p className="text-xl text-slate-300 max-w-2xl">
+                Join live sessions with industry experts and expand your knowledge
+              </p>
             </div>
             <Link
               to="/webinars"
-              className="hidden md:inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+              className="hidden md:inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105"
             >
               View All Webinars
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </div>
-          
-          <div className="relative mb-8">
+
+          <div className="relative">
             <Swiper
               modules={[Autoplay, Navigation]}
               spaceBetween={30}
               slidesPerView={1}
-              autoplay={{ delay: 5000, disableOnInteraction: false }}
+              autoplay={{ delay: 6000, disableOnInteraction: false }}
               speed={1000}
-              loop={true}
+              loop={webinars.length > 1}
+              breakpoints={{
+                640: { slidesPerView: 1 },
+                768: { slidesPerView: 2 },
+                1024: { slidesPerView: 2 },
+              }}
               navigation={{
                 prevEl: ".webinars_prev",
                 nextEl: ".webinars_next",
               }}
             >
-              {webinars.length > 0 ? webinars.map((webinar) => (
-                <SwiperSlide key={webinar._id}>
-                  <Link
-                    to={`/webinars/${webinar._id}`}
-                    className="group bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-105 block"
-                  >
-                    <div className="p-8">
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                          <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-green-400/20 text-green-400">
-                            <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                            Live Soon
-                          </span>
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-400/20 text-blue-400">
-                            Free
-                          </span>
+              {webinars.length > 0 ? (
+                webinars.map((webinar) => (
+                  <SwiperSlide key={webinar._id}>
+                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-500 shadow-xl">
+                      <div className="p-8">
+                        <div className="flex items-center justify-between mb-8">
+                          <div className="flex items-center gap-4">
+                            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-emerald-500/20 to-green-500/20 text-emerald-400 border border-emerald-500/30">
+                              <div className="w-2 h-2 bg-emerald-400 rounded-full mr-2 animate-pulse"></div>
+                              Live Soon
+                            </span>
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                              Free
+                            </span>
+                          </div>
+                          <div className="flex items-center text-slate-300 bg-white/10 border border-white/20 px-4 py-2 rounded-full">
+                            <Users className="h-4 w-4 mr-2 text-purple-400" />
+                            <span className="font-semibold">{webinar.attendees?.length || 0}</span>
+                            <span className="ml-1">registered</span>
+                          </div>
                         </div>
-                        <div className="flex items-center text-blue-100 bg-white/10 border border-white/20 px-3 py-2 rounded-full group-hover:scale-110 transition-transform duration-300">
-                          <Users className="h-4 w-4 mr-2 text-white" />
-                          <span className="font-semibold">{webinar.attendees?.length || 0}</span>
-                          <span className="ml-1">registered</span>
+
+                        <h3 className="text-3xl font-bold text-white mb-6 leading-tight">
+                          {webinar.title || "Expert-Led Webinar Session"}
+                        </h3>
+
+                        <p className="text-slate-300 mb-8 text-lg leading-relaxed line-clamp-3">
+                          {webinar.description || "Join us for an insightful session with industry experts."}
+                        </p>
+
+                        <div className="flex items-center mb-8">
+                          <img
+                            src={webinar.speaker?.profileImage || "https://placehold.co/60"}
+                            alt={webinar.speaker?.name || "Speaker"}
+                            className="h-16 w-16 rounded-full mr-4 object-cover border-2 border-white/20"
+                          />
+                          <div>
+                            <p className="text-xl font-semibold text-white">
+                              {webinar.speaker?.name || "Expert Speaker"}
+                            </p>
+                            <p className="text-slate-300">Industry Expert & Trainer</p>
+                          </div>
                         </div>
-                      </div>
-                      
-                      <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-green-400 transition-colors">
-                        {webinar.title || 'Untitled Webinar'}
-                      </h3>
-                      
-                      <p className="text-blue-100 mb-6 text-lg leading-relaxed line-clamp-3">
-                        {webinar.description || 'No description available.'}
-                      </p>
-                      
-                      <div className="flex items-center mb-6">
-                        <img
-                          src={webinar.speaker?.profileImage || 'https://placehold.co/60'}
-                          alt={webinar.speaker?.name || 'Speaker'}
-                          className="h-12 w-12 rounded-full mr-4 object-cover border border-white/20"
-                        />
-                        <div>
-                          <p className="text-lg font-semibold text-white">
-                            {webinar.speaker?.name || 'Expert Speaker'}
-                          </p>
-                          <p className="text-blue-100">Industry Expert & Trainer</p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                          <div className="flex items-center text-slate-300 bg-white/10 border border-white/20 p-4 rounded-xl">
+                            <Calendar className="h-5 w-5 mr-3 text-purple-400" />
+                            <span className="font-semibold">
+                              {webinar.startTime && !isNaN(new Date(webinar.startTime).getTime())
+                                ? format(new Date(webinar.startTime), "PPp")
+                                : "Date TBA"}
+                            </span>
+                          </div>
+                          <div className="flex items-center text-slate-300 bg-white/10 border border-white/20 p-4 rounded-xl">
+                            <Clock className="h-5 w-5 mr-3 text-blue-400" />
+                            <span className="font-semibold">{webinar.duration || 60} minutes</span>
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between bg-white/10 border border-white/20 p-4 rounded-xl">
-                        <div className="flex items-center text-blue-100 group-hover:scale-110 transition-transform duration-300">
-                          <Calendar className="h-5 w-5 mr-2 text-white" />
-                          <span className="font-semibold">
-                            {webinar.startTime && !isNaN(new Date(webinar.startTime).getTime())
-                              ? format(new Date(webinar.startTime), 'PPp')
-                              : 'Unknown date'}
-                          </span>
-                        </div>
-                        <div className="flex items-center text-blue-100 group-hover:scale-110 transition-transform duration-300">
-                          <Clock className="h-5 w-5 mr-2 text-white" />
-                          <span className="font-semibold">{webinar.duration || 60} mins</span>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-6">
+
                         <Link
                           to={`/webinars/${webinar._id}`}
-                          className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+                          className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105"
                         >
                           Register Now
-                          <ArrowRight className="ml-2 h-4 w-4" />
+                          <ArrowRight className="ml-2 h-5 w-5" />
                         </Link>
                       </div>
                     </div>
-                  </Link>
+                  </SwiperSlide>
+                ))
+              ) : (
+                <SwiperSlide>
+                  <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
+                    <Calendar className="w-16 h-16 mx-auto mb-4 text-slate-400 opacity-50" />
+                    <p className="text-slate-400 text-lg">No webinars scheduled</p>
+                  </div>
                 </SwiperSlide>
-              )) : <SwiperSlide><div className="min-h-screen flex items-center justify-center text-white">No webinars available</div></SwiperSlide>}
+              )}
             </Swiper>
-            
-            {/* Custom Navigation Buttons */}
-            <button className="webinars_prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10">
+
+            {/* Navigation Buttons */}
+            <button className="webinars_prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-4 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10 shadow-lg">
               <ChevronLeft className="w-6 h-6" />
             </button>
-            <button className="webinars_next absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10">
+            <button className="webinars_next absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-4 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10 shadow-lg">
               <ChevronRight className="w-6 h-6" />
             </button>
           </div>
-          
-          <div className="text-center md:hidden">
+
+          <div className="text-center mt-12 md:hidden">
             <Link
               to="/webinars"
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg"
             >
               View All Webinars
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section (Slider) */}
-      <section className="py-20 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
-              <Star className="w-4 h-4 mr-2 text-yellow-400" />
-              What Our Learners Say
+      {/* Enhanced Testimonials Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-amber-500/20 to-orange-500/20 backdrop-blur-md border border-white/10 rounded-full text-sm font-semibold mb-8">
+              <Star className="w-5 h-5 mr-2 text-amber-400" />
+              <span className="bg-gradient-to-r from-amber-200 to-orange-200 bg-clip-text text-transparent">
+                What Our Learners Say
+              </span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-6">
-              Success Stories & Testimonials
+            <h2 className="text-4xl md:text-6xl font-bold mb-8">
+              <span className="bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+                Success Stories & Testimonials
+              </span>
             </h2>
-            <p className="text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
-              Hear from professionals and students who have transformed their careers with us.
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+              Hear from professionals and students who have transformed their careers with us
             </p>
           </div>
-          <Swiper
-            modules={[Autoplay, Navigation]}
-            spaceBetween={30}
-            slidesPerView={1}
-            autoplay={{ delay: 6000, disableOnInteraction: false }}
-            speed={1000}
-            loop={true}
-            navigation={{ prevEl: ".testimonials_prev", nextEl: ".testimonials_next" }}
-          >
-            {testimonials.length > 0 ? testimonials.map((t) => (
-              <SwiperSlide key={t._id}>
-                <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl p-8 flex flex-col items-center text-center max-w-xl mx-auto">
-                  <img src={t.img} alt={t.name} className="w-20 h-20 rounded-full mb-4 object-cover border-4 border-blue-500/30" />
-                  <p className="text-blue-100 mb-4 italic">“{t.text}”</p>
-                  <div className="font-bold text-white">{t.name}</div>
-                  <div className="text-blue-200 text-sm">{t.title}</div>
-                </div>
-              </SwiperSlide>
-            )) : <SwiperSlide><div className="text-white">No testimonials available</div></SwiperSlide>}
-          </Swiper>
-          {/* Custom Navigation Buttons */}
-          <button className="testimonials_prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10">
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <button className="testimonials_next absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10">
-            <ChevronRight className="w-6 h-6" />
-          </button>
+
+          <div className="relative">
+            <Swiper
+              modules={[Autoplay, Navigation, Pagination]}
+              spaceBetween={30}
+              slidesPerView={1}
+              autoplay={{ delay: 6000, disableOnInteraction: false }}
+              speed={1000}
+              loop={testimonials.length > 1}
+              pagination={{ clickable: true, el: ".testimonials-pagination" }}
+              navigation={{ prevEl: ".testimonials_prev", nextEl: ".testimonials_next" }}
+            >
+              {testimonials.length > 0 ? (
+                testimonials.map((t) => (
+                  <SwiperSlide key={t._id}>
+                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-12 text-center max-w-4xl mx-auto shadow-2xl">
+                      <div className="flex justify-center mb-6">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="w-6 h-6 text-amber-400 fill-current" />
+                        ))}
+                      </div>
+                      <blockquote className="text-2xl md:text-3xl text-slate-200 mb-8 italic leading-relaxed font-light">
+                        "{t.text}"
+                      </blockquote>
+                      <div className="flex items-center justify-center">
+                        <img
+                          src={t.img || "/placeholder.svg"}
+                          alt={t.name}
+                          className="w-20 h-20 rounded-full mr-6 object-cover border-4 border-purple-500/30 shadow-lg"
+                        />
+                        <div className="text-left">
+                          <div className="text-xl font-bold text-white">{t.name}</div>
+                          <div className="text-slate-300">{t.title}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </SwiperSlide>
+                ))
+              ) : (
+                <SwiperSlide>
+                  <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-12 text-center">
+                    <Star className="w-16 h-16 mx-auto mb-4 text-slate-400 opacity-50" />
+                    <p className="text-slate-400 text-lg">No testimonials available</p>
+                  </div>
+                </SwiperSlide>
+              )}
+            </Swiper>
+
+            {/* Navigation Buttons */}
+            <button className="testimonials_prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-4 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10 shadow-lg">
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button className="testimonials_next absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-4 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-110 z-10 shadow-lg">
+              <ChevronRight className="w-6 h-6" />
+            </button>
+
+            {/* Pagination Dots */}
+            <div className="testimonials-pagination flex justify-center mt-8 gap-2"></div>
+          </div>
         </div>
       </section>
 
-      {/* FAQ Section (Accordion) */}
-      <section className="py-20 bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 relative overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
-              <BookOpen className="w-4 h-4 mr-2 text-blue-400" />
-              Frequently Asked Questions
+      {/* Enhanced FAQ Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 backdrop-blur-md border border-white/10 rounded-full text-sm font-semibold mb-8">
+              <BookOpen className="w-5 h-5 mr-2 text-blue-400" />
+              <span className="bg-gradient-to-r from-blue-200 to-indigo-200 bg-clip-text text-transparent">
+                Frequently Asked Questions
+              </span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-6">
-              Got Questions? We’ve Got Answers
+            <h2 className="text-4xl md:text-6xl font-bold mb-8">
+              <span className="bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+                Got Questions? We've Got Answers
+              </span>
             </h2>
-            <p className="text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
-              Find answers to the most common questions about our platform, courses, and support.
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+              Find answers to the most common questions about our platform, courses, and support
             </p>
           </div>
           <FAQAccordion faqs={faqs} />
         </div>
       </section>
 
-      <section className="py-20 bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 relative overflow-hidden">
+      {/* Enhanced CTA Section */}
+      <section className="py-24 relative overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
         </div>
-        
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="mb-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Ready to Transform Your Career?
-            </h2>
-            <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-              Join over 50,000 professionals who have advanced their careers with our expert-led courses. 
-              Start your journey today with a free trial.
-            </p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link
-              to="/register"
-              className="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-            >
-              Start Free Trial
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              to="/courses"
-              className="inline-flex items-center px-8 py-4 border-2 border-white/30 text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300 backdrop-blur-sm"
-            >
-              Browse Courses
-            </Link>
-          </div>
-          
-          <div className="mt-12 text-center">
-            <p className="text-blue-200 mb-4">Trusted by professionals from</p>
-            <div className="flex justify-center items-center gap-8 opacity-60">
-              <div className="text-white font-bold text-lg">Google</div>
-              <div className="text-white font-bold text-lg">Microsoft</div>
-              <div className="text-white font-bold text-lg">Amazon</div>
-              <div className="text-white font-bold text-lg">Meta</div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-12 shadow-2xl">
+            <div className="mb-8">
+              <h2 className="text-4xl md:text-6xl font-bold mb-8">
+                <span className="bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+                  Ready to Transform Your Career?
+                </span>
+              </h2>
+              <p className="text-xl text-slate-300 mb-10 leading-relaxed max-w-3xl mx-auto">
+                Join over 50,000 professionals who have advanced their careers with our expert-led courses. Start your
+                journey today with a free trial.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
+              <Link
+                to="/register"
+                className="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold text-lg rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-2xl transform hover:scale-105"
+              >
+                Start Free Trial
+                <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
+                to="/courses"
+                className="inline-flex items-center px-10 py-5 border-2 border-white/30 text-white font-semibold text-lg rounded-xl hover:bg-white/10 hover:border-white/50 transition-all duration-300"
+              >
+                Browse Courses
+              </Link>
+            </div>
+
+            <div className="text-center">
+              <p className="text-slate-400 mb-6 text-lg">Trusted by professionals from</p>
+              <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
+                <div className="text-white font-bold text-xl">Google</div>
+                <div className="text-white font-bold text-xl">Microsoft</div>
+                <div className="text-white font-bold text-xl">Amazon</div>
+                <div className="text-white font-bold text-xl">Meta</div>
+                <div className="text-white font-bold text-xl">Apple</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
-
     </div>
-  );
-};
+  )
+}
 
-function FAQAccordion({ faqs }: { faqs: FAQ[] }) {
-  const [openIdx, setOpenIdx] = useState<number | null>(null);
+function FAQAccordion({ faqs }: { faqs: any[] }) {
+  const [openIdx, setOpenIdx] = useState<number | null>(null)
+
   return (
     <div className="space-y-4">
-      {faqs.length > 0 ? faqs.map((faq, idx) => (
-        <div key={idx} className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl">
-          <button
-            className="w-full flex justify-between items-center p-6 focus:outline-none"
-            onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
-            aria-expanded={openIdx === idx}
+      {faqs.length > 0 ? (
+        faqs.map((faq, idx) => (
+          <div
+            key={idx}
+            className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-300"
           >
-            <span className="font-bold text-white text-left">{faq.question}</span>
-            <ChevronRight className={`w-6 h-6 text-blue-200 transition-transform duration-300 ${openIdx === idx ? 'rotate-90' : ''}`} />
-          </button>
-          {openIdx === idx && (
-            <div className="px-6 pb-6 text-blue-100 animate-fadeIn">
-              {faq.answer}
-            </div>
-          )}
+            <button
+              className="w-full flex justify-between items-center p-8 focus:outline-none focus:ring-2 focus:ring-purple-500/50 rounded-2xl"
+              onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
+              aria-expanded={openIdx === idx}
+            >
+              <span className="font-bold text-white text-left text-lg pr-4">{faq.question}</span>
+              <div className={`flex-shrink-0 transition-transform duration-300 ${openIdx === idx ? "rotate-90" : ""}`}>
+                <ChevronRight className="w-6 h-6 text-purple-400" />
+              </div>
+            </button>
+            {openIdx === idx && (
+              <div className="px-8 pb-8 text-slate-300 animate-fadeIn leading-relaxed text-lg">{faq.answer}</div>
+            )}
+          </div>
+        ))
+      ) : (
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
+          <BookOpen className="w-16 h-16 mx-auto mb-4 text-slate-400 opacity-50" />
+          <p className="text-slate-400 text-lg">No FAQs available</p>
         </div>
-      )) : <div className="text-white">No FAQs available</div>}
+      )}
       <style>{`
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { 
+          from { opacity: 0; transform: translateY(-10px); } 
+          to { opacity: 1; transform: translateY(0); } 
+        }
         .animate-fadeIn { animation: fadeIn 0.3s ease; }
       `}</style>
     </div>
-  );
+  )
 }
 
-export default Home;
+export default Home

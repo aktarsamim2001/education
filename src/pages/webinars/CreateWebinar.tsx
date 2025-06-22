@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, Video } from 'lucide-react';
 import { createWebinar } from '../../store/slices/webinarSlice';
 import type { AppDispatch } from '../../store/store';
 import { toast } from 'react-toastify';
+import axios from '../../axiosConfig';
 
 const CreateWebinar = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -17,6 +18,15 @@ const CreateWebinar = () => {
     duration: 60,
     link: '',
   });
+  const [instructors, setInstructors] = useState([]);
+  const [selectedInstructor, setSelectedInstructor] = useState('');
+
+  useEffect(() => {
+    // Fetch instructors from backend
+    axios.get('/api/users/instructors')
+      .then(res => setInstructors(res.data))
+      .catch(() => setInstructors([]));
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -31,7 +41,7 @@ const CreateWebinar = () => {
     setLoading(true);
 
     try {
-      await dispatch(createWebinar(formData)).unwrap();
+      await dispatch(createWebinar({ ...formData, speaker: selectedInstructor })).unwrap();
       toast.success('Webinar created successfully!');
       navigate('/webinars');
     } catch (error: any) {
@@ -159,6 +169,25 @@ const CreateWebinar = () => {
                     placeholder="https://zoom.us/j/example"
                   />
                 </div>
+              </div>
+
+              <div className="group">
+                <label htmlFor="instructor" className="block text-sm font-medium text-white">
+                  Instructor
+                </label>
+                <select
+                  id="instructor"
+                  name="instructor"
+                  required
+                  value={selectedInstructor}
+                  onChange={e => setSelectedInstructor(e.target.value)}
+                  className="mt-1 block w-full bg-white/10 border border-white/20 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 group-hover:bg-white/15"
+                >
+                  <option value="">Select Instructor</option>
+                  {instructors.map((inst: any) => (
+                    <option key={inst._id} value={inst._id}>{inst.name}</option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>

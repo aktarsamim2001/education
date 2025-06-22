@@ -19,6 +19,11 @@ const webinarSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    speakerName: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     startTime: {
       type: Date,
       required: [true, 'Start time is required'],
@@ -67,6 +72,58 @@ const webinarSchema = new mongoose.Schema(
       type: Number,
       min: [1, 'Maximum attendees must be at least 1'],
       default: 100
+    },
+    learningOutcomes: [{
+      type: String,
+      trim: true,
+    }],
+    prerequisites: [{
+      type: String,
+      trim: true,
+    }],
+    agenda: [{
+      time: { type: String, trim: true },
+      topic: { type: String, trim: true },
+      description: { type: String, trim: true },
+    }],
+    resources: [{
+      name: { type: String, trim: true },
+      type: { type: String, trim: true },
+      url: { type: String, trim: true },
+    }],
+    longDescription: {
+      type: String,
+      trim: true,
+    },
+    language: {
+      type: String,
+      trim: true,
+      default: 'English',
+    },
+    level: {
+      type: String,
+      trim: true,
+      default: 'Intermediate',
+    },
+    speakerBio: {
+      type: String,
+      trim: true,
+    },
+    speakerExpertise: [{
+      type: String,
+      trim: true,
+    }],
+    speakerRole: {
+      type: String,
+      trim: true,
+    },
+    speakerCompany: {
+      type: String,
+      trim: true,
+    },
+    speakerExperience: {
+      type: String,
+      trim: true,
     }
   },
   {

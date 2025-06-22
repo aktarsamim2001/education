@@ -20,6 +20,7 @@ import testimonialRoutes from './routes/testimonialRoutes.js';
 import faqRoutes from './routes/faqRoutes.js';
 import whyChooseUsRoutes from './routes/whyChooseUsRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
+import { getContactInfo } from './controllers/contactController.js';
 
 // Load environment variables
 dotenv.config();
@@ -59,6 +60,7 @@ app.use('/api/stats', statRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/faqs', faqRoutes);
 app.use('/api/why-choose-us', whyChooseUsRoutes);
+app.get('/api/contact-info', getContactInfo);
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));

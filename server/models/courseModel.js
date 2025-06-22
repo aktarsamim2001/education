@@ -18,6 +18,10 @@ const lessonSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  video: {
+    type: String, // URL or file path to the video
+    default: '',
+  },
 });
 
 const courseSchema = new mongoose.Schema(
