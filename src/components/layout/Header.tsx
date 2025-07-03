@@ -52,6 +52,7 @@ const Header = () => {
     { path: "/courses", label: "Courses" },
     { path: "/webinars", label: "Webinars" },
     { path: "/blogs", label: "Blog" },
+    { path: "/about", label: "About" },
     { path: "/contact", label: "Contact" },
   ]
 

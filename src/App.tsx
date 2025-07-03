@@ -25,6 +25,7 @@ import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import RoleRoute from './components/auth/RoleRoute';
 import ErrorBoundary from './components/ErrorBoundary';
+import AboutPage from './pages/about';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -74,12 +75,13 @@ function App() {
       <UserProvider>
         <div className="flex flex-col min-h-screen">
           <Header />
-          <main className="flex-grow">
+          <main className="flex-grow mt-6">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/about" element={<AboutPage />} />
               <Route path="/courses" element={<CourseList />} />
               <Route path="/courses/:id" element={<CourseDetail />} />
               <Route path="/blogs" element={<BlogList />} />

@@ -7,7 +7,7 @@ interface Webinar {
   description: string;
   longDescription?: string;
   speaker: {
-    _id: string;
+    _id: string | null;
     name: string;
     email: string;
     profileImage?: string;
@@ -18,8 +18,11 @@ interface Webinar {
     expertise?: string[];
   };
   startTime: string;
+  endTime: string; // <-- add endTime
   duration: number;
-  link: string;
+  price: number; // <-- add price
+  zoomUrl?: string; // <-- add zoomUrl
+  link?: string; // keep for backward compatibility
   attendees: string[];
   recordingUrl?: string;
   createdAt: string;
@@ -46,6 +49,7 @@ interface WebinarState {
   webinar: Webinar | null;
   loading: boolean;
   error: string | null;
+  registrationStatus: Record<string, boolean>; // webinarId -> registered
 }
 
 const initialState: WebinarState = {
@@ -53,6 +57,7 @@ const initialState: WebinarState = {
   webinar: null,
   loading: false,
   error: null,
+  registrationStatus: {},
 };
 
 export const fetchWebinars = createAsyncThunk(
@@ -115,14 +120,32 @@ export const deleteWebinar = createAsyncThunk(
   }
 );
 
+// Register for Webinar (update to return { id, registered })
 export const registerForWebinar = createAsyncThunk(
   'webinars/registerForWebinar',
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await axios.patch(`/api/webinars/register/${id}`);
-      return response.data;
+      // Assume backend returns updated webinar and registration status
+      return { id, webinar: response.data, registered: true };
     } catch (error) {
       return rejectWithValue((error as any).response?.data?.message || 'Failed to register for webinar');
+    }
+  }
+);
+
+// Add thunk to check registration status (already present, just ensure consistent return)
+export const checkWebinarRegistration = createAsyncThunk(
+  'webinars/checkWebinarRegistration',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`/api/webinars/${id}/is-registered`);
+      return { id, registered: response.data.registered };
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response && error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data) {
+        return rejectWithValue((error.response.data as { message?: string }).message || 'Failed to check registration');
+      }
+      return rejectWithValue('Failed to check registration');
     }
   }
 );
@@ -136,6 +159,10 @@ const webinarSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+    },
+    setRegistrationStatus: (state, action) => {
+      const { id, registered } = action.payload;
+      state.registrationStatus[id] = registered;
     },
   },
   extraReducers: (builder) => {
@@ -218,16 +245,24 @@ const webinarSlice = createSlice({
       
       // Register for Webinar
       .addCase(registerForWebinar.fulfilled, (state, action) => {
-        const updatedWebinar = action.payload;
-        state.webinars = state.webinars.map((webinar) =>
-          webinar._id === updatedWebinar._id ? updatedWebinar : webinar
+        const { id, webinar, registered } = action.payload;
+        state.webinars = state.webinars.map((w) =>
+          w._id === id ? webinar : w
         );
-        if (state.webinar?._id === updatedWebinar._id) {
-          state.webinar = updatedWebinar;
+        if (state.webinar?._id === id) {
+          state.webinar = webinar;
         }
+        // Mark as registered
+        if (id) {
+          state.registrationStatus[id] = registered;
+        }
+      })
+      // Check Webinar Registration
+      .addCase(checkWebinarRegistration.fulfilled, (state, action) => {
+        state.registrationStatus[action.payload.id] = action.payload.registered;
       });
   },
 });
 
-export const { clearWebinar, clearError } = webinarSlice.actions;
+export const { clearWebinar, clearError, setRegistrationStatus } = webinarSlice.actions;
 export default webinarSlice.reducer;

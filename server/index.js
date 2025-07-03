@@ -21,6 +21,8 @@ import faqRoutes from './routes/faqRoutes.js';
 import whyChooseUsRoutes from './routes/whyChooseUsRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
 import { getContactInfo } from './controllers/contactController.js';
+import webinarRegistrationRoutes from './routes/webinarRegistrationRoutes.js';
+import aboutRoutes from './routes/aboutRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -60,6 +62,8 @@ app.use('/api/stats', statRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/faqs', faqRoutes);
 app.use('/api/why-choose-us', whyChooseUsRoutes);
+app.use('/api/webinar-registrations', webinarRegistrationRoutes);
+app.use('/api/about', aboutRoutes);
 app.get('/api/contact-info', getContactInfo);
 
 // Serve uploaded files

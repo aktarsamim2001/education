@@ -14,6 +14,8 @@ import testimonialReducer from './slices/testimonialSlice';
 import faqReducer from './slices/faqSlice';
 import bannerReducer from './slices/bannerSlice';
 import whyChooseUsReducer from './slices/whyChooseUsSlice';
+import webinarRegistrationReducer from './slices/webinarRegistrationSlice';
+import aboutReducer from './slices/aboutSlice';
 
 export const store = configureStore({
   reducer: {
@@ -32,6 +34,8 @@ export const store = configureStore({
     faqs: faqReducer,
     banners: bannerReducer,
     whyChooseUs: whyChooseUsReducer,
+    webinarRegistration: webinarRegistrationReducer,
+    about: aboutReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

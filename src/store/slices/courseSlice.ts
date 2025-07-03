@@ -1,6 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../axiosConfig';
 
+interface Lesson {
+  title: string;
+  content: string;
+  duration: number;
+  order: number;
+  video?: string;
+  unlocked?: boolean;
+}
+
 interface Course {
   _id: string;
   title: string;
@@ -8,15 +17,12 @@ interface Course {
   price: number;
   category: string;
   instructorId: string;
-  lessons: Array<{
-    title: string;
-    content: string;
-    duration: number;
-    order: number;
-  }>;
+  lessons: Lesson[];
   thumbnail: string;
   published: boolean;
   approved: boolean;
+  isEnrolled?: boolean;
+  paymentStatus?: string;
 }
 
 interface CourseState {

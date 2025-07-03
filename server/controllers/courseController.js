@@ -1,5 +1,6 @@
 import { validationResult } from 'express-validator';
 import Course from '../models/courseModel.js';
+import Enrollment from '../models/enrollmentModel.js'; // Import Enrollment model if not already done
 
 // @desc    Create a new course
 // @route   POST /api/courses
@@ -130,7 +131,45 @@ export const getCourseById = async (req, res) => {
       return res.status(404).json({ message: 'Course not found' });
     }
 
-    res.json(course);
+    // Default: not enrolled, not paid
+    let isEnrolled = false;
+    let paymentStatus = 'none';
+    let enrollment = null;
+    let userId = req.user?._id;
+
+    if (userId) {
+      // Check enrollment
+      enrollment = await Enrollment.findOne({ userId, courseId: course._id });
+      if (enrollment) {
+        isEnrolled = true;
+        paymentStatus = enrollment.paymentStatus;
+      }
+    }
+
+    // Prepare lessons with unlock info
+    let lessonsWithAccess = [];
+    if (Array.isArray(course.lessons)) {
+      lessonsWithAccess = course.lessons.map((lesson, idx) => {
+        let unlocked = false;
+        if (idx === 0) {
+          unlocked = true; // Always unlock first lesson
+        } else if (isEnrolled && (paymentStatus === 'completed' || paymentStatus === 'free')) {
+          unlocked = true; // Unlock all if paid/free
+        }
+        return {
+          ...lesson.toObject(),
+          unlocked,
+        };
+      });
+    }
+
+    // Send course details with lesson access info
+    res.json({
+      ...course.toObject(),
+      lessons: lessonsWithAccess,
+      isEnrolled,
+      paymentStatus,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -17,7 +17,8 @@ const webinarSchema = new mongoose.Schema(
     speaker: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false, // Allow null for custom speaker names
+      default: null,
     },
     speakerName: {
       type: String,
@@ -50,9 +51,13 @@ const webinarSchema = new mongoose.Schema(
         message: 'Please enter a valid URL'
       }
     },
+    price: {
+      type: Number,
+      default: 0 // 0 = free, >0 = paid
+    },
     attendees: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      email: { type: String, trim: true, required: true },
+      paid: { type: Boolean, default: false }
     }],
     recordingUrl: {
       type: String,

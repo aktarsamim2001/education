@@ -19,6 +19,7 @@ interface Enrollment {
   certificateIssued: boolean;
   lastAccessedAt: string;
   createdAt: string;
+  paymentId?: string;
 }
 
 interface EnrollmentState {
@@ -37,10 +38,54 @@ export const enrollInCourse = createAsyncThunk(
   'enrollments/enrollInCourse',
   async (courseId: string, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`/api/enrollments/enroll/${courseId}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `/api/enrollments/enroll/${courseId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Failed to enroll in course');
+    }
+  }
+);
+
+// NEW: For paid courses, verify payment and enroll
+export const verifyAndEnrollPaidCourse = createAsyncThunk(
+  'enrollments/verifyAndEnrollPaidCourse',
+  async (
+    {
+      courseId,
+      paymentId,
+      orderId,
+      signature,
+    }: { courseId: string; paymentId: string; orderId: string; signature: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        '/api/payments/verify',
+        {
+          courseId,
+          paymentId,
+          orderId,
+          signature,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Payment verification failed');
     }
   }
 );
@@ -93,7 +138,7 @@ const enrollmentSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Enroll in Course
+      // Enroll in Course (free)
       .addCase(enrollInCourse.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -106,7 +151,21 @@ const enrollmentSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
+      // Verify and Enroll Paid Course
+      .addCase(verifyAndEnrollPaidCourse.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(verifyAndEnrollPaidCourse.fulfilled, (state, action) => {
+        state.loading = false;
+        state.enrollments.unshift(action.payload);
+      })
+      .addCase(verifyAndEnrollPaidCourse.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
       // Fetch User Enrollments
       .addCase(fetchUserEnrollments.pending, (state) => {
         state.loading = true;
@@ -120,7 +179,7 @@ const enrollmentSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // Update Progress
       .addCase(updateCourseProgress.pending, (state) => {
         state.loading = true;

@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   BookOpen,
   Calendar,
@@ -16,60 +16,73 @@ import {
   Play,
   Award,
   Globe,
-} from "lucide-react"
-import { format } from "date-fns"
-import { Swiper, SwiperSlide } from "swiper/react"
-import { Autoplay, Navigation, Pagination } from "swiper/modules"
-import "swiper/css"
-import "swiper/css/navigation"
-import "swiper/css/pagination"
-import "swiper/css/autoplay"
-import { useSelector, useDispatch } from "react-redux"
-import type { RootState, AppDispatch } from "../store/store"
-import { fetchBanners } from "../store/slices/bannerSlice"
-import { fetchFeatures } from "../store/slices/featureSlice"
-import { fetchStats } from "../store/slices/statSlice"
-import { fetchTestimonials } from "../store/slices/testimonialSlice"
-import { fetchFaqs } from "../store/slices/faqSlice"
-import { fetchWhyChooseUs } from "../store/slices/whyChooseUsSlice"
-import { fetchCourses } from "../store/slices/courseSlice"
-import { fetchBlogs } from "../store/slices/blogSlice"
-import { fetchWebinars } from "../store/slices/webinarSlice"
+} from "lucide-react";
+import { format } from "date-fns";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/autoplay";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState, AppDispatch } from "../store/store";
+import { fetchBanners } from "../store/slices/bannerSlice";
+import { fetchFeatures } from "../store/slices/featureSlice";
+import { fetchStats } from "../store/slices/statSlice";
+import { fetchTestimonials } from "../store/slices/testimonialSlice";
+import { fetchFaqs } from "../store/slices/faqSlice";
+import { fetchWhyChooseUs } from "../store/slices/whyChooseUsSlice";
+import { fetchCourses } from "../store/slices/courseSlice";
+import { fetchBlogs } from "../store/slices/blogSlice";
+import { fetchWebinars } from "../store/slices/webinarSlice";
+import { fetchAbout } from "../store/slices/aboutSlice";
 
 const Home = () => {
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>();
 
   // Redux selectors for all dynamic sections
-  const banners = useSelector((state: RootState) => state.banners.items)
-  const bannersLoading = useSelector((state: RootState) => state.banners.loading)
-  const bannersError = useSelector((state: RootState) => state.banners.error)
+  const banners = useSelector((state: RootState) => state.banners.items);
+  const bannersLoading = useSelector(
+    (state: RootState) => state.banners.loading
+  );
+  const bannersError = useSelector((state: RootState) => state.banners.error);
 
-  const features = useSelector((state: RootState) => state.features.items)
-  const stats = useSelector((state: RootState) => state.stats.items)
-  const testimonials = useSelector((state: RootState) => state.testimonials.items)
-  const faqs = useSelector((state: RootState) => state.faqs.items)
-  const whyChooseUs = useSelector((state: RootState) => state.whyChooseUs.items)
-  const courses = useSelector((state: RootState) => state.courses.courses)
-  const coursesLoading = useSelector((state: RootState) => state.courses.loading)
-  const coursesError = useSelector((state: RootState) => state.courses.error)
-  const blogs = useSelector((state: RootState) => state.blogs.blogs)
-  const blogsLoading = useSelector((state: RootState) => state.blogs.loading)
-  const blogsError = useSelector((state: RootState) => state.blogs.error)
-  const webinars = useSelector((state: RootState) => state.webinars.webinars)
-  const webinarsLoading = useSelector((state: RootState) => state.webinars.loading)
-  const webinarsError = useSelector((state: RootState) => state.webinars.error)
+  const features = useSelector((state: RootState) => state.features.items);
+  const stats = useSelector((state: RootState) => state.stats.items);
+  const testimonials = useSelector(
+    (state: RootState) => state.testimonials.items
+  );
+  const faqs = useSelector((state: RootState) => state.faqs.items);
+  const whyChooseUs = useSelector(
+    (state: RootState) => state.whyChooseUs.items
+  );
+  const courses = useSelector((state: RootState) => state.courses.courses);
+  const coursesLoading = useSelector(
+    (state: RootState) => state.courses.loading
+  );
+  const coursesError = useSelector((state: RootState) => state.courses.error);
+  const blogs = useSelector((state: RootState) => state.blogs.blogs);
+  const blogsLoading = useSelector((state: RootState) => state.blogs.loading);
+  const blogsError = useSelector((state: RootState) => state.blogs.error);
+  const webinars = useSelector((state: RootState) => state.webinars.webinars);
+  const webinarsLoading = useSelector(
+    (state: RootState) => state.webinars.loading
+  );
+  const webinarsError = useSelector((state: RootState) => state.webinars.error);
+  const about = useSelector((state: RootState) => state.about.content);
 
   useEffect(() => {
-    dispatch(fetchBanners())
-    dispatch(fetchFeatures())
-    dispatch(fetchStats())
-    dispatch(fetchTestimonials())
-    dispatch(fetchFaqs())
-    dispatch(fetchWhyChooseUs())
-    dispatch(fetchCourses())
-    dispatch(fetchBlogs())
-    dispatch(fetchWebinars())
-  }, [dispatch])
+    dispatch(fetchBanners());
+    dispatch(fetchFeatures());
+    dispatch(fetchStats());
+    dispatch(fetchTestimonials());
+    dispatch(fetchFaqs());
+    dispatch(fetchWhyChooseUs());
+    dispatch(fetchCourses());
+    dispatch(fetchBlogs());
+    dispatch(fetchWebinars());
+    dispatch(fetchAbout());
+  }, [dispatch]);
 
   // Map backend banner fields to frontend expected fields
   const mappedBanners = banners.map((banner: any) => ({
@@ -80,7 +93,7 @@ const Home = () => {
     ctas: banner.ctas || [],
     stats: banner.stats || [],
     badge: banner.badge || undefined,
-  }))
+  }));
 
   if (bannersLoading) {
     return (
@@ -94,10 +107,12 @@ const Home = () => {
             <div className="animate-spin rounded-full h-20 w-20 border-4 border-purple-500/30 border-t-purple-500"></div>
             <div className="absolute inset-0 animate-ping rounded-full h-20 w-20 border-4 border-purple-500/20"></div>
           </div>
-          <p className="mt-6 text-slate-300 font-medium text-lg">Loading amazing content...</p>
+          <p className="mt-6 text-slate-300 font-medium text-lg">
+            Loading amazing content...
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   if (bannersError) {
@@ -108,7 +123,9 @@ const Home = () => {
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
         </div>
         <div className="text-center bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl relative z-10 max-w-md mx-4">
-          <div className="text-red-400 text-xl font-semibold mb-4">{bannersError}</div>
+          <div className="text-red-400 text-xl font-semibold mb-4">
+            {bannersError}
+          </div>
           <button
             onClick={() => window.location.reload()}
             className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg"
@@ -117,8 +134,37 @@ const Home = () => {
           </button>
         </div>
       </div>
-    )
+    );
   }
+
+  // About section data fallback
+  const aboutData = about || {
+    headline: "Learn the Stock Market Anytime, Anywhere!",
+    subheadline: "Know About INVESMATE",
+    image: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg",
+    sections: [
+      {
+        icon: "sebi",
+        title: "SEBI-Registered",
+        description:
+          "INVESMATE, an Educational Initiative of SEBI Registered RA: INVESMATE INSIGHTS [Reg No.: INH000017985]",
+      },
+      {
+        icon: "trust",
+        title: "6 Years of Trust",
+        description:
+          "Empowering over 1 lakh 20 thousands students to achieve financial success for the last 6 years.",
+      },
+      {
+        icon: "mentorship",
+        title: "Powerful Program + Mentorship",
+        description:
+          "Our every share market course module is thoughtfully designed and taught by NISM-Certified professionals.",
+      },
+    ],
+    buttonText: "Know About Us",
+    buttonLink: "/about",
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
@@ -130,7 +176,7 @@ const Home = () => {
       </div>
 
       {/* Hero Banner Section */}
-      <section className="relative w-full min-h-screen overflow-hidden">
+      {/* <section className="relative w-full min-h-screen overflow-hidden">
         <Swiper
           modules={[Autoplay, Navigation, Pagination]}
           spaceBetween={0}
@@ -216,7 +262,6 @@ const Home = () => {
           )}
         </Swiper>
 
-        {/* Enhanced Navigation */}
         <button
           aria-label="Previous banner"
           className="banner_prev absolute left-6 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-4 text-white hover:bg-white/20 focus:ring-4 focus:ring-purple-500/50 transition-all duration-300 transform hover:scale-110 z-30"
@@ -230,8 +275,149 @@ const Home = () => {
           <ChevronRight className="w-6 h-6" />
         </button>
 
-        {/* Pagination Dots */}
         <div className="hero-pagination absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-2"></div>
+      </section> */}
+
+      {/* Enhanced Hero Banner Section */}
+      <section className="relative w-full min-h-screen overflow-hidden bg-black">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.1),transparent_50%)]"></div>
+        </div>
+
+        <Swiper
+          modules={[Autoplay, Navigation, Pagination]}
+          spaceBetween={0}
+          slidesPerView={1}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
+          speed={1200}
+          loop={true}
+          pagination={{ clickable: true, el: ".hero-pagination" }}
+          navigation={{ prevEl: ".banner_prev", nextEl: ".banner_next" }}
+          className="w-full min-h-screen"
+        >
+          {mappedBanners.length > 0 ? (
+            mappedBanners.map((banner) => (
+              <SwiperSlide key={banner._id}>
+                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen flex items-center">
+                  <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center w-full">
+                    {/* Left Content */}
+                    <div className="space-y-8">
+                      <div className="space-y-6">
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                          <span className="bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+                            {banner.headline}
+                          </span>
+                        </h1>
+
+                        <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-2xl">
+                          {banner.subheadline}
+                        </p>
+                      </div>
+
+                      {/* CTA Buttons */}
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        <button className="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-lg font-semibold rounded-xl shadow-2xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105">
+                          {banner.ctaText}
+                          <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </button>
+
+                        <button className="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-300">
+                          <Play className="mr-2 w-5 h-5" />
+                          Watch Demo
+                        </button>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="flex flex-wrap gap-6 pt-4">
+                        {banner.stats && banner.stats.length > 0 ? (
+                          banner.stats.map((stat: { value: string | number; label: string }, idx: number) => (
+                            <div key={idx} className="flex items-center gap-2 text-slate-300">
+                              {/* Icon logic based on stat.label */}
+                              {stat.label?.toLowerCase().includes("student") && <Users className="w-5 h-5 text-purple-400" />}
+                              {stat.label?.toLowerCase().includes("course") && <BookOpen className="w-5 h-5 text-blue-400" />}
+                              {stat.label?.toLowerCase().includes("rating") && <Star className="w-5 h-5 text-yellow-400" />}
+                              <span className="font-semibold text-white">{stat.value}</span>
+                              <span>{stat.label}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-2 text-slate-300">
+                              <Users className="w-5 h-5 text-purple-400" />
+                              <span className="font-semibold text-white">50,000+</span>
+                              <span>Students</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-slate-300">
+                              <BookOpen className="w-5 h-5 text-blue-400" />
+                              <span className="font-semibold text-white">500+</span>
+                              <span>Courses</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-slate-300">
+                              <Star className="w-5 h-5 text-yellow-400" />
+                              <span className="font-semibold text-white">4.8</span>
+                              <span>Rating</span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    {/* Right Content - Image/Visual */}
+                    <div className="relative">
+                      <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p- lg:p-11">
+                        {/* Placeholder for main visual */}
+                        <div className="aspect-[4/3] bg-gradient-to-br from-white/10 to-white/5 rounded-xl flex items-center justify-center border border-white/10">
+                          <img
+                            src={banner.image}
+                            alt={banner.title}
+                            className="rounded-xl w-full h-full object-cover"
+                          />
+                          <div className="absolute text-center space-y-4 cursor-pointer">
+                            <div className="w-16 h-16 mx-auto bg-black/60 hover:backdrop-blur-sm rounded-full flex items-center justify-center">
+                              <Play className="w-8 h-8 text-white" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Floating Elements */}
+                        <div className="absolute -top-4 -right-4 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
+                          New Course
+                        </div>
+
+                        <div className="absolute -bottom-4 -left-4 bg-white/10 backdrop-blur-md border border-white/20 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                          Live Sessions
+                        </div>
+                      </div>
+
+                      {/* Background Decoration */}
+                      <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-3xl blur-xl -z-10"></div>
+                    </div>
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))
+          ) : (
+            <SwiperSlide>
+              <div className="min-h-screen flex items-center justify-center text-white">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold mb-4">
+                    Welcome to Our Platform
+                  </h1>
+                  <p className="text-xl text-slate-300">No banners available</p>
+                </div>
+              </div>
+            </SwiperSlide>
+          )}
+        </Swiper>
+
+        {/* Bottom Navigation Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30">
+          <div className="flex gap-2">
+            <div className="w-2 h-2 bg-white rounded-full"></div>
+            <div className="w-2 h-2 bg-white/40 rounded-full"></div>
+            <div className="w-2 h-2 bg-white/40 rounded-full"></div>
+          </div>
+        </div>
       </section>
 
       {/* Why Choose Us Section */}
@@ -247,11 +433,12 @@ const Home = () => {
             </div>
             <h2 className="text-4xl md:text-6xl font-bold mb-8">
               <span className="bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
-                Why Choose Our Educational Platform?
+                Why Will You Choose Stop Loss Stock Market Academy?
               </span>
             </h2>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-              Discover what makes us the preferred choice for professionals and students worldwide
+              Discover what makes us the preferred choice for professionals and
+              students worldwide
             </p>
           </div>
 
@@ -284,6 +471,113 @@ const Home = () => {
         </div>
       </section>
 
+      {/* About Us Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col md:flex-row md:items-stretch items-center gap-12">
+          {/* Left: Image */}
+          <div className="flex-1 flex justify-center items-stretch md:h-full mb-10 md:mb-0">
+            <img
+              src={aboutData.image}
+              alt="About Invesmate"
+              className="h-full w-auto max-w-md rounded-3xl shadow-2xl border-4 border-white/10 object-cover"
+            />
+          </div>
+          {/* Right: Content */}
+          <div className="flex-1">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+              {aboutData.headline}
+            </h2>
+            <p className="text-xl text-slate-300 mb-8 font-semibold">
+              {aboutData.subheadline}
+            </p>
+            <div className="space-y-6 mb-10">
+              {aboutData.sections &&
+                aboutData.sections.map((section: any, idx: number) => (
+                  <div key={idx} className="flex items-start gap-5">
+                    <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
+                      {/* Icon logic */}
+                      {section.icon === "sebi" && (
+                        <svg
+                          width="32"
+                          height="32"
+                          fill="none"
+                          viewBox="0 0 32 32"
+                        >
+                          <circle
+                            cx="16"
+                            cy="16"
+                            r="16"
+                            fill="#fff"
+                            fillOpacity="0.1"
+                          />
+                          <path
+                            d="M10 22V10h12v12H10zm2-2h8V12h-8v8z"
+                            fill="#7C3AED"
+                          />
+                        </svg>
+                      )}
+                      {section.icon === "trust" && (
+                        <svg
+                          width="32"
+                          height="32"
+                          fill="none"
+                          viewBox="0 0 32 32"
+                        >
+                          <circle
+                            cx="16"
+                            cy="16"
+                            r="16"
+                            fill="#fff"
+                            fillOpacity="0.1"
+                          />
+                          <path
+                            d="M16 8l6 4v8l-6 4-6-4v-8l6-4zm0 2.18L11 12.13v7.74l5 3.33 5-3.33v-7.74l-5-1.95z"
+                            fill="#10B981"
+                          />
+                        </svg>
+                      )}
+                      {section.icon === "mentorship" && (
+                        <svg
+                          width="32"
+                          height="32"
+                          fill="none"
+                          viewBox="0 0 32 32"
+                        >
+                          <circle
+                            cx="16"
+                            cy="16"
+                            r="16"
+                            fill="#fff"
+                            fillOpacity="0.1"
+                          />
+                          <path
+                            d="M16 10a4 4 0 110 8 4 4 0 010-8zm0 10c3.31 0 6 2.24 6 5v1H10v-1c0-2.76 2.69-5 6-5z"
+                            fill="#F59E42"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-bold text-white mb-1">
+                        {section.title}
+                      </h4>
+                      <p className="text-slate-300 text-base">
+                        {section.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+            </div>
+            <Link
+              to={aboutData.buttonLink}
+              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg transform hover:scale-105"
+            >
+              {aboutData.buttonText}
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Enhanced Stats Section */}
       <section className="py-20 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -291,11 +585,17 @@ const Home = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.length > 0 ? (
                 stats.map((stat, index) => (
-                  <div key={stat._id} className="text-center group" style={{ animationDelay: `${index * 150}ms` }}>
+                  <div
+                    key={stat._id}
+                    className="text-center group"
+                    style={{ animationDelay: `${index * 150}ms` }}
+                  >
                     <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">
                       {stat.value}
                     </div>
-                    <div className="text-slate-300 font-medium text-lg">{stat.label}</div>
+                    <div className="text-slate-300 font-medium text-lg">
+                      {stat.label}
+                    </div>
                   </div>
                 ))
               ) : (
@@ -320,7 +620,8 @@ const Home = () => {
                 </span>
               </h2>
               <p className="text-xl text-slate-300 max-w-2xl">
-                Discover our most popular and highly-rated courses designed by industry experts
+                Discover our most popular and highly-rated courses designed by
+                industry experts
               </p>
             </div>
             <Link
@@ -358,11 +659,14 @@ const Home = () => {
                       to={`/courses/${course._id}`}
                       className="group block bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl  shadow-xl"
                     >
-                      <div className="relative overflow-hidden">
+                      <div className="relative overflow-hidden rounded-t-2xl">
                         <img
-                          src={course.thumbnail || "https://images.pexels.com/photos/5905710/pexels-photo-5905710.jpeg"}
+                          src={
+                            course.thumbnail ||
+                            "https://images.pexels.com/photos/5905710/pexels-photo-5905710.jpeg"
+                          }
                           alt={course.title || "Course thumbnail"}
-                          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-700 rounded-2xl"
+                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-700 rounded-t-2xl"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <div className="absolute top-4 left-4">
@@ -373,7 +677,9 @@ const Home = () => {
                         <div className="absolute top-4 right-4">
                           <div className="flex items-center bg-white/20 backdrop-blur-md border border-white/20 rounded-full px-3 py-1">
                             <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                            <span className="text-sm font-semibold text-white ml-1">{course.rating || "4.8"}</span>
+                            <span className="text-sm font-semibold text-white ml-1">
+                              {course.rating || "4.8"}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -383,17 +689,22 @@ const Home = () => {
                           {course.title || "Untitled Course"}
                         </h3>
                         <p className="text-slate-300 mb-6 line-clamp-2 leading-relaxed">
-                          {course.description || "Comprehensive course designed to enhance your skills."}
+                          {course.description ||
+                            "Comprehensive course designed to enhance your skills."}
                         </p>
 
                         <div className="flex items-center justify-between mb-6">
                           <div className="flex items-center text-slate-300">
                             <Users className="h-4 w-4 mr-2 text-purple-400" />
-                            <span className="text-sm font-medium">{course.enrolledStudents?.length || 0} students</span>
+                            <span className="text-sm font-medium">
+                              {course.enrolledStudents?.length || 0} students
+                            </span>
                           </div>
                           <div className="flex items-center text-slate-300">
                             <Clock className="h-4 w-4 mr-2 text-blue-400" />
-                            <span className="text-sm font-medium">12 weeks</span>
+                            <span className="text-sm font-medium">
+                              12 weeks
+                            </span>
                           </div>
                         </div>
 
@@ -403,7 +714,9 @@ const Home = () => {
                           </span>
                           <div className="flex items-center text-emerald-400 bg-emerald-400/20 px-3 py-1 rounded-full">
                             <TrendingUp className="w-4 h-4 mr-1" />
-                            <span className="text-sm font-semibold">Popular</span>
+                            <span className="text-sm font-semibold">
+                              Popular
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -414,7 +727,9 @@ const Home = () => {
                 <SwiperSlide>
                   <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
                     <BookOpen className="w-16 h-16 mx-auto mb-4 text-slate-400 opacity-50" />
-                    <p className="text-slate-400 text-lg">No courses available</p>
+                    <p className="text-slate-400 text-lg">
+                      No courses available
+                    </p>
                   </div>
                 </SwiperSlide>
               )}
@@ -452,7 +767,8 @@ const Home = () => {
                 </span>
               </h2>
               <p className="text-xl text-slate-300 max-w-2xl">
-                Stay updated with industry trends and expert knowledge from our thought leaders
+                Stay updated with industry trends and expert knowledge from our
+                thought leaders
               </p>
             </div>
             <Link
@@ -492,10 +808,11 @@ const Home = () => {
                       <div className="relative overflow-hidden">
                         <img
                           src={
-                            blog.thumbnail || "https://images.pexels.com/photos/3243/pen-notebook-notes-studying.jpg"
+                            blog.thumbnail ||
+                            "https://images.pexels.com/photos/3243/pen-notebook-notes-studying.jpg"
                           }
                           alt={blog.title || "Blog thumbnail"}
-                          className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-700 rounded-2xl"
+                          className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-700 rounded-t-2xl"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <div className="absolute top-4 left-4">
@@ -510,13 +827,17 @@ const Home = () => {
                           {blog.title || "Untitled Blog"}
                         </h3>
                         <p className="text-slate-300 mb-6 line-clamp-3 leading-relaxed">
-                          {blog.content || "Discover insights and knowledge from industry experts."}
+                          {blog.content ||
+                            "Discover insights and knowledge from industry experts."}
                         </p>
 
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
                             <img
-                              src={blog.authorId?.profileImage || "https://placehold.co/40"}
+                              src={
+                                blog.authorId?.profileImage ||
+                                "https://placehold.co/40"
+                              }
                               alt={blog.authorId?.name || "Author"}
                               className="h-12 w-12 rounded-full mr-3 object-cover border-2 border-white/20"
                             />
@@ -524,11 +845,14 @@ const Home = () => {
                               <span className="text-sm font-semibold text-white block">
                                 {blog.authorId?.name || "Expert Author"}
                               </span>
-                              <span className="text-xs text-slate-400">Content Creator</span>
+                              <span className="text-xs text-slate-400">
+                                Content Creator
+                              </span>
                             </div>
                           </div>
                           <span className="text-sm text-slate-300 bg-white/10 border border-white/20 px-3 py-1 rounded-full">
-                            {blog.createdAt && !isNaN(new Date(blog.createdAt).getTime())
+                            {blog.createdAt &&
+                            !isNaN(new Date(blog.createdAt).getTime())
                               ? format(new Date(blog.createdAt), "MMM d, yyyy")
                               : "Recent"}
                           </span>
@@ -541,7 +865,9 @@ const Home = () => {
                 <SwiperSlide>
                   <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
                     <BookOpen className="w-16 h-16 mx-auto mb-4 text-slate-400 opacity-50" />
-                    <p className="text-slate-400 text-lg">No blog posts available</p>
+                    <p className="text-slate-400 text-lg">
+                      No blog posts available
+                    </p>
                   </div>
                 </SwiperSlide>
               )}
@@ -579,7 +905,8 @@ const Home = () => {
                 </span>
               </h2>
               <p className="text-xl text-slate-300 max-w-2xl">
-                Join live sessions with industry experts and expand your knowledge
+                Join live sessions with industry experts and expand your
+                knowledge
               </p>
             </div>
             <Link
@@ -626,7 +953,9 @@ const Home = () => {
                           </div>
                           <div className="flex items-center text-slate-300 bg-white/10 border border-white/20 px-4 py-2 rounded-full">
                             <Users className="h-4 w-4 mr-2 text-purple-400" />
-                            <span className="font-semibold">{webinar.attendees?.length || 0}</span>
+                            <span className="font-semibold">
+                              {webinar.attendees?.length || 0}
+                            </span>
                             <span className="ml-1">registered</span>
                           </div>
                         </div>
@@ -636,12 +965,16 @@ const Home = () => {
                         </h3>
 
                         <p className="text-slate-300 mb-8 text-lg leading-relaxed line-clamp-3">
-                          {webinar.description || "Join us for an insightful session with industry experts."}
+                          {webinar.description ||
+                            "Join us for an insightful session with industry experts."}
                         </p>
 
                         <div className="flex items-center mb-8">
                           <img
-                            src={webinar.speaker?.profileImage || "https://placehold.co/60"}
+                            src={
+                              webinar.speaker?.profileImage ||
+                              "https://placehold.co/60"
+                            }
                             alt={webinar.speaker?.name || "Speaker"}
                             className="h-16 w-16 rounded-full mr-4 object-cover border-2 border-white/20"
                           />
@@ -649,7 +982,9 @@ const Home = () => {
                             <p className="text-xl font-semibold text-white">
                               {webinar.speaker?.name || "Expert Speaker"}
                             </p>
-                            <p className="text-slate-300">Industry Expert & Trainer</p>
+                            <p className="text-slate-300">
+                              Industry Expert & Trainer
+                            </p>
                           </div>
                         </div>
 
@@ -657,14 +992,17 @@ const Home = () => {
                           <div className="flex items-center text-slate-300 bg-white/10 border border-white/20 p-4 rounded-xl">
                             <Calendar className="h-5 w-5 mr-3 text-purple-400" />
                             <span className="font-semibold">
-                              {webinar.startTime && !isNaN(new Date(webinar.startTime).getTime())
+                              {webinar.startTime &&
+                              !isNaN(new Date(webinar.startTime).getTime())
                                 ? format(new Date(webinar.startTime), "PPp")
                                 : "Date TBA"}
                             </span>
                           </div>
                           <div className="flex items-center text-slate-300 bg-white/10 border border-white/20 p-4 rounded-xl">
                             <Clock className="h-5 w-5 mr-3 text-blue-400" />
-                            <span className="font-semibold">{webinar.duration || 60} minutes</span>
+                            <span className="font-semibold">
+                              {webinar.duration || 60} minutes
+                            </span>
                           </div>
                         </div>
 
@@ -683,7 +1021,9 @@ const Home = () => {
                 <SwiperSlide>
                   <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
                     <Calendar className="w-16 h-16 mx-auto mb-4 text-slate-400 opacity-50" />
-                    <p className="text-slate-400 text-lg">No webinars scheduled</p>
+                    <p className="text-slate-400 text-lg">
+                      No webinars scheduled
+                    </p>
                   </div>
                 </SwiperSlide>
               )}
@@ -726,7 +1066,8 @@ const Home = () => {
               </span>
             </h2>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-              Hear from professionals and students who have transformed their careers with us
+              Hear from professionals and students who have transformed their
+              careers with us
             </p>
           </div>
 
@@ -739,7 +1080,10 @@ const Home = () => {
               speed={1000}
               loop={testimonials.length > 1}
               pagination={{ clickable: true, el: ".testimonials-pagination" }}
-              navigation={{ prevEl: ".testimonials_prev", nextEl: ".testimonials_next" }}
+              navigation={{
+                prevEl: ".testimonials_prev",
+                nextEl: ".testimonials_next",
+              }}
             >
               {testimonials.length > 0 ? (
                 testimonials.map((t) => (
@@ -747,7 +1091,10 @@ const Home = () => {
                     <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-12 text-center max-w-4xl mx-auto shadow-2xl">
                       <div className="flex justify-center mb-6">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-6 h-6 text-amber-400 fill-current" />
+                          <Star
+                            key={i}
+                            className="w-6 h-6 text-amber-400 fill-current"
+                          />
                         ))}
                       </div>
                       <blockquote className="text-2xl md:text-3xl text-slate-200 mb-8 italic leading-relaxed font-light">
@@ -760,7 +1107,9 @@ const Home = () => {
                           className="w-20 h-20 rounded-full mr-6 object-cover border-4 border-purple-500/30 shadow-lg"
                         />
                         <div className="text-left">
-                          <div className="text-xl font-bold text-white">{t.name}</div>
+                          <div className="text-xl font-bold text-white">
+                            {t.name}
+                          </div>
                           <div className="text-slate-300">{t.title}</div>
                         </div>
                       </div>
@@ -771,7 +1120,9 @@ const Home = () => {
                 <SwiperSlide>
                   <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-12 text-center">
                     <Star className="w-16 h-16 mx-auto mb-4 text-slate-400 opacity-50" />
-                    <p className="text-slate-400 text-lg">No testimonials available</p>
+                    <p className="text-slate-400 text-lg">
+                      No testimonials available
+                    </p>
                   </div>
                 </SwiperSlide>
               )}
@@ -807,7 +1158,8 @@ const Home = () => {
               </span>
             </h2>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-              Find answers to the most common questions about our platform, courses, and support
+              Find answers to the most common questions about our platform,
+              courses, and support
             </p>
           </div>
           <FAQAccordion faqs={faqs} />
@@ -830,8 +1182,9 @@ const Home = () => {
                 </span>
               </h2>
               <p className="text-xl text-slate-300 mb-10 leading-relaxed max-w-3xl mx-auto">
-                Join over 50,000 professionals who have advanced their careers with our expert-led courses. Start your
-                journey today with a free trial.
+                Join over 50,000 professionals who have advanced their careers
+                with our expert-led courses. Start your journey today with a
+                free trial.
               </p>
             </div>
 
@@ -852,7 +1205,9 @@ const Home = () => {
             </div>
 
             <div className="text-center">
-              <p className="text-slate-400 mb-6 text-lg">Trusted by professionals from</p>
+              <p className="text-slate-400 mb-6 text-lg">
+                Trusted by professionals from
+              </p>
               <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
                 <div className="text-white font-bold text-xl">Google</div>
                 <div className="text-white font-bold text-xl">Microsoft</div>
@@ -865,11 +1220,11 @@ const Home = () => {
         </div>
       </section>
     </div>
-  )
-}
+  );
+};
 
 function FAQAccordion({ faqs }: { faqs: any[] }) {
-  const [openIdx, setOpenIdx] = useState<number | null>(null)
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   return (
     <div className="space-y-4">
@@ -884,13 +1239,21 @@ function FAQAccordion({ faqs }: { faqs: any[] }) {
               onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
               aria-expanded={openIdx === idx}
             >
-              <span className="font-bold text-white text-left text-lg pr-4">{faq.question}</span>
-              <div className={`flex-shrink-0 transition-transform duration-300 ${openIdx === idx ? "rotate-90" : ""}`}>
+              <span className="font-bold text-white text-left text-lg pr-4">
+                {faq.question}
+              </span>
+              <div
+                className={`flex-shrink-0 transition-transform duration-300 ${
+                  openIdx === idx ? "rotate-90" : ""
+                }`}
+              >
                 <ChevronRight className="w-6 h-6 text-purple-400" />
               </div>
             </button>
             {openIdx === idx && (
-              <div className="px-8 pb-8 text-slate-300 animate-fadeIn leading-relaxed text-lg">{faq.answer}</div>
+              <div className="px-8 pb-8 text-slate-300 animate-fadeIn leading-relaxed text-lg">
+                {faq.answer}
+              </div>
             )}
           </div>
         ))
@@ -908,7 +1271,7 @@ function FAQAccordion({ faqs }: { faqs: any[] }) {
         .animate-fadeIn { animation: fadeIn 0.3s ease; }
       `}</style>
     </div>
-  )
+  );
 }
 
-export default Home
+export default Home;

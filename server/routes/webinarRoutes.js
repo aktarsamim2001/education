@@ -7,6 +7,7 @@ import {
   deleteWebinar,
   registerForWebinar,
   updateWebinarStatus,
+  isRegisteredForWebinar,
 } from '../controllers/webinarController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { isInstructor } from '../middleware/roleCheckMiddleware.js';
@@ -17,6 +18,7 @@ const router = express.Router();
 // Public routes
 router.get('/', getWebinars);
 router.get('/:id', getWebinarById);
+router.get('/:id/is-registered', protect, isRegisteredForWebinar);
 
 // Protected routes
 router.post('/', protect, isInstructor, webinarValidation, createWebinar);

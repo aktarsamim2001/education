@@ -18,7 +18,8 @@ const paymentSchema = new mongoose.Schema(
     },
     paymentId: {
       type: String,
-      required: true,
+      required: false, // Not required at creation, will be set after payment success
+      default: '',
     },
     orderId: {
       type: String,
@@ -53,7 +54,11 @@ const paymentSchema = new mongoose.Schema(
 // Indexes for better query performance
 paymentSchema.index({ userId: 1, createdAt: -1 });
 paymentSchema.index({ courseId: 1 });
-paymentSchema.index({ paymentId: 1 }, { unique: true });
+// Make paymentId unique only when it is not empty
+paymentSchema.index(
+  { paymentId: 1 },
+  { unique: true, partialFilterExpression: { paymentId: { $ne: '' } } }
+);
 paymentSchema.index({ orderId: 1 }, { unique: true });
 
 const Payment = mongoose.model('Payment', paymentSchema);

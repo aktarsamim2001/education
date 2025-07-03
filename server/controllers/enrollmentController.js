@@ -9,13 +9,18 @@ import { createNotification } from './notificationController.js';
 export const enrollCourse = async (req, res) => {
   try {
     const course = await Course.findById(req.params.courseId);
-    
+
     if (!course) {
       return res.status(404).json({ message: 'Course not found' });
     }
 
     if (!course.published || !course.approved) {
       return res.status(400).json({ message: 'Course is not available for enrollment' });
+    }
+
+    // Only allow direct enrollment for free courses
+    if (course.price > 0) {
+      return res.status(400).json({ message: 'This course requires payment. Please complete payment to enroll.' });
     }
 
     // Check if already enrolled
@@ -31,6 +36,7 @@ export const enrollCourse = async (req, res) => {
     const enrollment = new Enrollment({
       userId: req.user._id,
       courseId: course._id,
+      paymentStatus: 'completed', // Free course, so mark as completed
     });
 
     const createdEnrollment = await enrollment.save();
@@ -41,7 +47,7 @@ export const enrollCourse = async (req, res) => {
 
     // Create notification for admin
     await createNotification(
-      'admin', // assuming there's an admin user ID or you can modify this based on your admin user
+      'admin',
       'New Course Enrollment',
       `${req.user.name} has enrolled in ${course.title}`,
       'enrollment',

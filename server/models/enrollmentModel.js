@@ -1,23 +1,22 @@
-
 import mongoose from 'mongoose';
 
 const quizResultSchema = new mongoose.Schema({
   quizId: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true
+    required: true,
   },
   score: {
     type: Number,
-    required: true
+    required: true,
   },
   totalQuestions: {
     type: Number,
-    required: true
+    required: true,
   },
   completedAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 const enrollmentSchema = new mongoose.Schema(
@@ -38,26 +37,36 @@ const enrollmentSchema = new mongoose.Schema(
       min: 0,
       max: 100,
     },
-    completedLessons: [{
-      lessonId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
+    completedLessons: [
+      {
+        lessonId: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+        },
+        completedAt: {
+          type: Date,
+          default: Date.now,
+        },
       },
-      completedAt: {
-        type: Date,
-        default: Date.now,
-      },
-    }],
+    ],
     quizResults: [quizResultSchema],
+    
+    // ✅ Updated: Added 'free' as valid status
     paymentStatus: {
       type: String,
-      enum: ['pending', 'completed', 'failed', 'refunded'],
+      enum: ['pending', 'completed', 'failed', 'refunded', 'free'],
       default: 'pending',
     },
+
+    // ✅ Updated: Only required for 'completed' (paid) status
     paymentId: {
       type: String,
+      required: function () {
+        return this.paymentStatus === 'completed';
+      },
       default: '',
     },
+
     certificateIssued: {
       type: Boolean,
       default: false,
@@ -70,33 +79,37 @@ const enrollmentSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    notes: [{
-      content: String,
-      lessonId: mongoose.Schema.Types.ObjectId,
-      createdAt: {
-        type: Date,
-        default: Date.now
-      }
-    }],
-    bookmarks: [{
-      lessonId: mongoose.Schema.Types.ObjectId,
-      timestamp: Number,
-      note: String,
-      createdAt: {
-        type: Date,
-        default: Date.now
-      }
-    }]
+    notes: [
+      {
+        content: String,
+        lessonId: mongoose.Schema.Types.ObjectId,
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+    bookmarks: [
+      {
+        lessonId: mongoose.Schema.Types.ObjectId,
+        timestamp: Number,
+        note: String,
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-// Compound index to ensure unique enrollment per user and course
+// ✅ Ensure unique enrollment per user and course
 enrollmentSchema.index({ userId: 1, courseId: 1 }, { unique: true });
 
-// Index for querying user enrollments
+// ✅ Index for user enrollments query
 enrollmentSchema.index({ userId: 1, createdAt: -1 });
 
 const Enrollment = mongoose.model('Enrollment', enrollmentSchema);
