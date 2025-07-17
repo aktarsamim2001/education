@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../axiosConfig';
 
 interface Lesson {
+  description: string;
   title: string;
   content: string;
   duration: number;
@@ -11,6 +12,14 @@ interface Lesson {
 }
 
 interface Course {
+  level: string;
+  originalPrice: number;
+  learningObjectives: any;
+  prerequisites: any;
+  instructor: any;
+  enrolledStudents: any;
+  rating: number;
+  language: string;
   _id: string;
   title: string;
   description: string;
@@ -50,7 +59,7 @@ export const fetchCourses = createAsyncThunk(
       }
       const response = await axios.get(`/api/courses?${queryParams.toString()}`);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch courses');
     }
   }

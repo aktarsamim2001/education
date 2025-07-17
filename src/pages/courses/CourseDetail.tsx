@@ -40,7 +40,7 @@ const CourseDetail = () => {
   const { user, loading: authLoading } = useContext(UserContext)
 
   const [activeTab, setActiveTab] = useState("overview")
-  const [isWishlisted, setIsWishlisted] = useState(false)
+  // const [isWishlisted, setIsWishlisted] = useState(false)
   const [isShareModalOpen, setIsShareModalOpen] = useState(false)
   const [enrolling, setEnrolling] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -125,8 +125,8 @@ const CourseDetail = () => {
           key,
           amount,
           currency,
-          name: course.title,
-          description: course.description,
+          name: course?.title,
+          description: course?.description,
           order_id: orderId,
           handler: async function (response: any) {
             // 3. On payment success, verify and enroll
@@ -147,7 +147,7 @@ const CourseDetail = () => {
           },
           theme: { color: "#6366f1" },
         }
-        // @ts-ignore
+
         const rzp = new window.Razorpay(options)
         rzp.open()
       }
@@ -160,7 +160,7 @@ const CourseDetail = () => {
   }
 
   const totalDuration = course?.lessons?.reduce((acc, lesson) => acc + (lesson.duration || 0), 0) || 0
-  const isEnrolled = user && course?.enrolledStudents?.includes(user._id)
+  // const isEnrolled = user && course?.enrolledStudents?.includes(user._id)
 
   if (loading || authLoading) {
     return (
@@ -228,10 +228,10 @@ const CourseDetail = () => {
                     <Zap className="w-4 h-4 mr-2" />
                     {course.category || "Featured Course"}
                   </span>
-                  {course.level && (
+                  {course?.level && (
                     <span className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500/20 to-green-500/20 backdrop-blur-md border border-white/20 rounded-full text-emerald-300 text-sm font-semibold">
                       <Target className="w-4 h-4 mr-2" />
-                      {course.level}
+                      {course?.level}
                     </span>
                   )}
                 </div>
@@ -337,11 +337,11 @@ const CourseDetail = () => {
                     <span className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
                       ₹{course.price}
                     </span>
-                    {course.originalPrice && course.originalPrice > course.price && (
+                    {course?.originalPrice && course?.originalPrice > course.price && (
                       <div className="text-right">
                         <span className="text-xl text-slate-400 line-through">₹{course.originalPrice}</span>
                         <div className="text-sm text-emerald-400 font-semibold">
-                          {Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)}% OFF
+                          {Math.round(((course?.originalPrice - course.price) / course?.originalPrice) * 100)}% OFF
                         </div>
                       </div>
                     )}
@@ -469,7 +469,7 @@ const CourseDetail = () => {
                             What you'll learn
                           </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {course.learningObjectives.map((objective: string, index: number) => (
+                            {course?.learningObjectives.map((objective: string, index: number) => (
                               <div
                                 key={index}
                                 className="flex items-start space-x-3 p-4 bg-white/5 rounded-xl border border-white/10"
@@ -489,7 +489,7 @@ const CourseDetail = () => {
                             Prerequisites
                           </h3>
                           <div className="space-y-3">
-                            {course.prerequisites.map((prereq: string, index: number) => (
+                            {course?.prerequisites.map((prereq: string, index: number) => (
                               <div
                                 key={index}
                                 className="flex items-start space-x-3 p-4 bg-white/5 rounded-xl border border-white/10"
@@ -525,7 +525,7 @@ const CourseDetail = () => {
                                 </div>
                                 <div>
                                   <h4 className="text-lg font-semibold text-white mb-1">{lesson.title}</h4>
-                                  <p className="text-slate-400">{lesson.description || "Master the fundamentals"}</p>
+                                  <p className="text-slate-400">{lesson?.description || "Master the fundamentals"}</p>
                                 </div>
                               </div>
                               <div className="flex items-center space-x-6">
@@ -593,8 +593,8 @@ const CourseDetail = () => {
                               <span className="text-slate-300">10K+ Students</span>
                             </div>
                           </div>
-                          {course.instructor?.bio && (
-                            <p className="text-slate-300 leading-relaxed">{course.instructor.bio}</p>
+                          {course?.instructor?.bio && (
+                            <p className="text-slate-300 leading-relaxed">{course?.instructorId?.bio}</p>
                           )}
                         </div>
                       </div>
@@ -631,10 +631,10 @@ const CourseDetail = () => {
                   <h3 className="text-xl font-semibold text-white mb-6">Course Statistics</h3>
                   <div className="space-y-4">
                     {[
-                      { label: "Enrolled Students", value: course.enrolledStudents?.length || 0, icon: Users },
-                      { label: "Course Rating", value: course.rating || 4.8, icon: Star },
+                      { label: "Enrolled Students", value: course?.enrolledStudents?.length || 0, icon: Users },
+                      { label: "Course Rating", value: course?.rating || 4.8, icon: Star },
                       { label: "Completion Rate", value: "94%", icon: TrendingUp },
-                      { label: "Language", value: course.language || "English", icon: Globe },
+                      { label: "Language", value: course?.language || "English", icon: Globe },
                     ].map((stat, index) => {
                       const Icon = stat.icon
                       return (
