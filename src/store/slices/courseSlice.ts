@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from '../../axiosConfig';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "../../axiosConfig";
 
 interface Lesson {
   description: string;
@@ -39,6 +39,8 @@ interface CourseState {
   course: Course | null;
   loading: boolean;
   error: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  instructorData: any;
 }
 
 const initialState: CourseState = {
@@ -46,80 +48,96 @@ const initialState: CourseState = {
   course: null,
   loading: false,
   error: null,
+  instructorData: [],
 };
 
 // Async thunks
 export const fetchCourses = createAsyncThunk(
-  'courses/fetchCourses',
+  "courses/fetchCourses",
   async (params: { published?: string } = {}, { rejectWithValue }) => {
     try {
       const queryParams = new URLSearchParams();
       if (params.published) {
-        queryParams.append('published', params.published);
+        queryParams.append("published", params.published);
       }
-      const response = await axios.get(`/api/courses?${queryParams.toString()}`);
+      const response = await axios.get(
+        `/api/courses?${queryParams.toString()}`
+      );
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch courses');
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch courses"
+      );
     }
   }
 );
 
 export const fetchCourseById = createAsyncThunk(
-  'courses/fetchCourseById',
+  "courses/fetchCourseById",
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await axios.get(`/api/courses/${id}`);
       return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch course');
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch course"
+      );
     }
   }
 );
 
 export const createCourse = createAsyncThunk(
-  'courses/createCourse',
+  "courses/createCourse",
   async (courseData: any, { rejectWithValue }) => {
     try {
       let config = {};
       // If courseData is FormData, let Axios set the headers
       if (courseData instanceof FormData) {
-        config = { headers: { 'Content-Type': 'multipart/form-data' } };
+        config = { headers: { "Content-Type": "multipart/form-data" } };
       }
-      const response = await axios.post('/api/courses', courseData, config);
+      const response = await axios.post("/api/courses", courseData, config);
       return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to create course');
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to create course"
+      );
     }
   }
 );
 
 export const updateCourse = createAsyncThunk(
-  'courses/updateCourse',
-  async ({ id, courseData }: { id: string; courseData: Partial<Course> }, { rejectWithValue }) => {
+  "courses/updateCourse",
+  async (
+    { id, courseData }: { id: string; courseData: Partial<Course> },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await axios.put(`/api/courses/${id}`, courseData);
       return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to update course');
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update course"
+      );
     }
   }
 );
 
 export const deleteCourse = createAsyncThunk(
-  'courses/deleteCourse',
+  "courses/deleteCourse",
   async (id: string, { rejectWithValue }) => {
     try {
       await axios.delete(`/api/courses/${id}`);
       return id;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to delete course');
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to delete course"
+      );
     }
   }
 );
 
 const courseSlice = createSlice({
-  name: 'courses',
+  name: "courses",
   initialState,
   reducers: {
     clearCourse: (state) => {
@@ -127,6 +145,9 @@ const courseSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+    },
+    setInstructorsData: (s, a) => {
+      s.instructorData = a.payload;
     },
   },
   extraReducers: (builder) => {
@@ -144,7 +165,7 @@ const courseSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // Fetch Course by ID
       .addCase(fetchCourseById.pending, (state) => {
         state.loading = true;
@@ -158,7 +179,7 @@ const courseSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // Create Course
       .addCase(createCourse.pending, (state) => {
         state.loading = true;
@@ -172,7 +193,7 @@ const courseSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // Update Course
       .addCase(updateCourse.pending, (state) => {
         state.loading = true;
@@ -189,7 +210,7 @@ const courseSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // Delete Course
       .addCase(deleteCourse.pending, (state) => {
         state.loading = true;
@@ -197,7 +218,9 @@ const courseSlice = createSlice({
       })
       .addCase(deleteCourse.fulfilled, (state, action) => {
         state.loading = false;
-        state.courses = state.courses.filter((course) => course._id !== action.payload);
+        state.courses = state.courses.filter(
+          (course) => course._id !== action.payload
+        );
         if (state.course?._id === action.payload) {
           state.course = null;
         }
@@ -209,5 +232,16 @@ const courseSlice = createSlice({
   },
 });
 
-export const { clearCourse, clearError } = courseSlice.actions;
+export const { clearCourse, clearError, setInstructorsData } =
+  courseSlice.actions;
 export default courseSlice.reducer;
+
+export const getInstructors = async (dispatch) => {
+  try {
+    const response = await axios.get("/instructors");
+    console.log("instructors", response);
+    dispatch(setInstructorsData(response?.data));
+  } catch (error) {
+    console.log("error", error);
+  }
+};

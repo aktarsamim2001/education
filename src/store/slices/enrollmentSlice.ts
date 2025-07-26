@@ -68,18 +68,30 @@ export const verifyAndEnrollPaidCourse = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const token = localStorage.getItem('token');
+      // const token = localStorage.getItem('token');
+
+      const storedUser = localStorage.getItem('user') || '{}';
+
+      // JSON.parse(storedUser)
+
+      const userData = JSON.parse(storedUser)
+
+      console.log('userData')
+      console.log(userData)
+
+      console.log('token : ' + userData.token)
+
       const response = await axios.post(
         '/api/payments/verify',
         {
-          courseId,
-          paymentId,
-          orderId,
-          signature,
+          courseId: courseId,
+          razorpay_payment_id: paymentId,
+          razorpay_order_id: orderId,
+          razorpay_signature: signature,
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${userData.token}`,
           },
         }
       );

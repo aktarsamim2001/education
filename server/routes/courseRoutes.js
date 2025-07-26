@@ -16,7 +16,7 @@ const router = express.Router();
 
 // Public routes
 router.get('/', getAllCourses);
-router.get('/:id', getCourseById);
+router.get('/:id', protect, getCourseById);
 
 // Protected routes
 router.post('/', protect, isInstructor, upload.single('thumbnail'), courseValidation, createCourse);

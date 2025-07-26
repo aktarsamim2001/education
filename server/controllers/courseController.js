@@ -18,7 +18,7 @@ export const createCourse = async (req, res) => {
     }
     const course = new Course({
       ...req.body,
-      instructorId: req.user._id,
+      instructorId: req.user.id,
       thumbnail: thumbnailPath || req.body.thumbnail || '',
       lessons: req.body.lessons ? JSON.parse(req.body.lessons) : [],
       // Auto-approve and publish if admin
@@ -127,6 +127,10 @@ export const getCourseById = async (req, res) => {
       .populate('instructorId', 'name email')
       .populate('reviews.user', 'name');
 
+
+    console.log('course')
+    console.log(course)
+
     if (!course) {
       return res.status(404).json({ message: 'Course not found' });
     }
@@ -136,6 +140,8 @@ export const getCourseById = async (req, res) => {
     let paymentStatus = 'none';
     let enrollment = null;
     let userId = req.user?._id;
+
+    console.log('userId : ' + userId);
 
     if (userId) {
       // Check enrollment

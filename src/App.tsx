@@ -75,7 +75,7 @@ function App() {
       <UserProvider>
         <div className="flex flex-col min-h-screen">
           <Header />
-          <main className="flex-grow mt-6">
+          <main className="flex-grow">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />

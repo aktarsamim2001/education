@@ -180,7 +180,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 px-4 sm:px-6 lg:px-8 py-8 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 px-4 sm:px-6 lg:px-8 py-8 relative overflow-hidden pt-[110px]">
       {[...Array(20)].map((_, i) => (
         <div
           key={i}
@@ -191,7 +191,7 @@ const AdminDashboard = () => {
             animationDelay: `${Math.random() * 5}s`,
             animationDuration: `${3 + Math.random() * 4}s`,
           }}
-        ></div>
+        ></div> 
       ))}
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Create Content Buttons */}

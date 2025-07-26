@@ -9,6 +9,21 @@ const generateToken = (id) => {
   });
 };
 
+// @desc    Get all instructors
+// @route   GET /api/users/instructors
+// @access  Public
+export const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({
+      role: 'instructor',
+      approved: true,
+    }).select('-password');
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Register a new user
 // @route   POST /api/users/register
 // @access  Public
@@ -18,7 +33,7 @@ export const registerUser = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role, profileImage } = req.body;
 
   try {
     // Check if user already exists
@@ -26,6 +41,9 @@ export const registerUser = async (req, res) => {
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
+
+    // cloudinary ==> link
+
 
     // Set auto-approval for students, pending for instructors
     const approved = role === 'student';
@@ -39,6 +57,7 @@ export const registerUser = async (req, res) => {
       role,
       approved,
       status,
+      // profileImage : link
     });
 
     if (user) {
@@ -74,7 +93,7 @@ export const loginUser = async (req, res) => {
   try {
     // Find user by email
     const user = await User.findOne({ email });
-    
+
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
@@ -140,7 +159,7 @@ export const updateProfile = async (req, res) => {
     // Update user fields if provided
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
-    
+
     // Only update password if provided
     if (req.body.password) {
       user.password = req.body.password;

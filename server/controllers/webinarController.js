@@ -77,6 +77,9 @@ export const getWebinars = async (req, res) => {
       .populate('speaker', 'name email profileImage role company experience bio expertise')
       .sort({ startTime: 1 });
 
+      console.log('webinars')
+      console.log(webinars)
+
     // Always return a speaker object
     webinars = webinars.map(w => {
       const obj = w.toObject();
